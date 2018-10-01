@@ -4,9 +4,6 @@ import pandas as pd
 import numpy as np
 import os
 
-# loaded_team_info = pd.read_csv('FFL_Info.csv')
-# url = r"week3test.html"
-
 
 def get_soup_single(league_id, team_id, week_id):
     url = gen_url_single(league_id, team_id, week_id)
@@ -17,13 +14,13 @@ def get_soup_single(league_id, team_id, week_id):
 
 def load_soup_single(file_path):
     with open(file_path, 'rb') as html:
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, 'html.parser')
     return soup
 
 
 def load_url(url):
     with open(url, 'rb') as html:
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, 'html.parser')
         return soup
 
 
@@ -42,26 +39,21 @@ def get_team_info(soup):
     proj_score = get_projected(soup)
     return [score, proj_score]
 
+
 def get_player_info(soup):
     all_player_info = []
-    player_table = soup.find_all('table', id='statTable0')
-    first_player = player_table[0].find_all('tr', class_='First')
-    all_player_info.append(parse_player_row(first_player))
 
-    other_players = player_table[0].find_all('tr', class_='Alt')
+    offensive_player_table = soup.find_all('table', id='statTable0')
+    offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
 
-    for player in other_players:
-        all_player_info.append(parse_player_row(player))
+    for player in offensive_players:
+        all_player_info.append(parse_offensive_player(player))
 
-    bench_players = player_table[0].find_all('tr', class_='bench')
+    kicker_table = soup.find_all('table', id='statTable1')
+    all_player_info.append(parse_kicker(kicker_table[0]))
 
-    for player in bench_players:
-        all_player_info.append(parse_player_row(player))
-
-    special_players = player_table[0].find_all('tr', class_='First Last')
-
-    for player in special_players:
-        all_player_info.append(parse_player_row(player))
+    defensive_table = soup.find_all('table', id='statTable2')
+    all_player_info.append(parse_defense(defensive_table[0]))
 
     return all_player_info
 
@@ -144,39 +136,32 @@ def save_team_info(data_array):
     pass
 
 
-def parse_player_row(row_soup):
+def parse_offensive_player(row_soup):
     data_soup = row_soup.find_all('td')
-    pos = data_soup[0].contents[0].find_all('span')[0].contents[0]
+    position = data_soup[0].contents[0].find_all('span')[0].contents[0]
     score = data_soup[4].contents[0].contents[0].contents[0]
-    proj = data_soup[5].contents[0].contents[0]
-    return [pos, score, proj]
+    projected_score = data_soup[5].contents[0].contents[0]
+    percent_start = data_soup[6].contents[0].contents[0].strip('%')
+    return [position, score, projected_score, percent_start]
 
 
-# get_all_info(team_info)
+def parse_kicker(row_soup):
+    data_soup = row_soup.find_all('td')
+    position = data_soup[0].contents[0].find_all('span')[0].contents[0]
+    score = data_soup[3].contents[0].contents[0].contents[0]
+    projected_score = data_soup[4].contents[0].contents[0]
+    percent_start = data_soup[5].contents[0].contents[0].strip('%')
+    return [position, score, projected_score, percent_start]
 
 
-league = '910981'
-team = '4'
-week = '3'
-# loaded_soup = get_soup_single(league, team, week)
-
-loaded_soup = load_soup_single('week3test.html')
-loaded_score = get_score(loaded_soup)
-loaded_proj = get_projected(loaded_soup)
-
-
-player_table = loaded_soup.find_all('table', id='statTable0')
-first_player = player_table[0].find_all('tr', class_='First')
-first_player = first_player[1]
-
-parse_player_row(first_player)
+def parse_defense(row_soup):
+    data_soup = row_soup.find_all('td')
+    position = data_soup[0].contents[0].find_all('span')[0].contents[0]
+    score = data_soup[3].contents[0].contents[0].contents[0]
+    projected_score = data_soup[4].contents[0].contents[0]
+    percent_start = data_soup[5].contents[0].contents[0].strip('%')
+    return [position, score, projected_score, percent_start]
 
 
-parse_player_row(first_player)
 
-other_players = player_table[0].find_all('tr', class_='Alt')
-
-bench_players = player_table[0].find_all('tr', class_='bench')
-
-special_players = player_table[0].find_all('tr', class_='First Last')
 
