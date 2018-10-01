@@ -19,3 +19,7 @@ week = '3'
 
 loaded_soup = dm.load_soup_single(ex_saved_html)
 all_week_info = dm.get_player_info(loaded_soup)
+
+
+for player in all_week_info:
+    print(player)
