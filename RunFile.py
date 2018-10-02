@@ -1,5 +1,5 @@
 
-import DataMiner as dm
+import TeamManager as dm
 
 # \venv\Scripts\activate
 
