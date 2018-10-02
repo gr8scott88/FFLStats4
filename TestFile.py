@@ -28,7 +28,16 @@ for player in all_week_info:
     print(player)
 
 
-relative_dir = r'/data/FFL_Info.csv'
-script_dir = r'C:/Users/gr8sc\PycharmProjects/FFLStats4'
+relative_dir = r'data\FFL_Info.csv'
+# script_dir = r'C:\Users\gr8sc\PycharmProjects\FFLStats4'
+script_dir = r'C:\Dev\Python\FFLStats4'
 file_dir = os.path.join(script_dir, relative_dir)
-lm.load_league(file_dir)
+print(file_dir)
+
+league_frame = lm.load_league(file_dir)
+
+week = 3
+
+for index, row in league_frame.iterrows():
+    team_id = row['TeamId']
+    league_id = row['LeagueId']

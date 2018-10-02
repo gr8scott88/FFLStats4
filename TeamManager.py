@@ -163,5 +163,6 @@ def parse_defense(row_soup):
     return [position, score, projected_score, percent_start]
 
 
+def get_team_info(team_id, league_id, week):
 
 
