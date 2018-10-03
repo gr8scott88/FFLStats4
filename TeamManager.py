@@ -4,18 +4,21 @@ import pandas as pd
 import numpy as np
 import os
 import unicodedata
+import Objects
+
+
 
 local_path = r'C:\Dev\Python\FFLStats4'
 
 
-def get_team_info(league_id, team_id, week_id):
-    soup = get_soup(league_id, team_id, week_id)
-    all_data = parse_all_stats(soup)
+def get_team_info(unique_id):
+    soup = get_soup(unique_id)
+    all_data = parse_all_stats(soup, unique_id)
     return all_data
 
 
-def get_soup(league_id, team_id, week_id):
-    save_file = gen_save_file(league_id, team_id, week_id)
+def get_soup(unique_id):
+    save_file = gen_save_file(unique_id)
     script_path = ''
     try:
         script_path = os.path.dirname(os.path.realpath(__file__))
@@ -31,7 +34,7 @@ def get_soup(league_id, team_id, week_id):
         print('Loading file: ' + file_path)
         soup = load_html(file_path)
     else:
-        url = gen_url(league_id, team_id, week_id)
+        url = gen_url(unique_id)
         print('Downloading web page: ' + url)
         soup = download_html(url, file_path)\
 
@@ -39,8 +42,8 @@ def get_soup(league_id, team_id, week_id):
     return soup
 
 
-def gen_save_file(league_id, team_id, week_id):
-    save_name = 'week' + str(week_id) + '_' + str(league_id) + '_' + str(team_id) + '.html'
+def gen_save_file(unique_id):
+    save_name = 'week' + str(unique_id.week) + '_' + str(unique_id.league) + '_' + str(unique_id.team) + '.html'
     return save_name
 
 
@@ -56,26 +59,25 @@ def download_html(url, fpath):
 
 def load_html(save_file):
     with open(save_file) as f:
-        soup = BeautifulSoup(f.read())
+        soup = BeautifulSoup(f.read(), 'html.parser')
         # print(soup)
     return soup
 
 
-def gen_url(league_id, team_id, week_id):
-    parse_url = 'https://football.fantasysports.yahoo.com/f1/' + str(league_id) + '/' + str(
-    team_id) + '/' + 'team?&week=' + str(week_id)
+def gen_url(unique_id):
+    parse_url = 'https://football.fantasysports.yahoo.com/f1/' + str(unique_id.league) + '/' + str(unique_id.team) + '/' + 'team?&week=' + str(unique_id.week)
     return parse_url
 
 
-def parse_all_stats(soup):
+def parse_all_stats(soup, unique_id):
     team_stats = parse_team_stats(soup)
     player_stats = parse_player_stats(soup)
-    return [team_stats, player_stats]
+    return [unique_id.get_id_array(), team_stats, player_stats]
 
 
 def parse_team_stats(soup):
-    team_score = get_team_score(soup)
-    proj_score = get_team_projected_score(soup)
+    team_score = float(get_team_score(soup))
+    proj_score = float(get_team_projected_score(soup))
     return [team_score, proj_score]
 
 
@@ -91,13 +93,13 @@ def get_player_info(soup):
     offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
 
     for player in offensive_players:
-        all_player_info.append(parse_offensive_player(player))
+        all_player_info.append(floatify(parse_offensive_player(player)))
 
     kicker_table = soup.find_all('table', id='statTable1')
-    all_player_info.append(parse_kicker(kicker_table[0]))
+    all_player_info.append(floatify(parse_kicker(kicker_table[0])))
 
     defensive_table = soup.find_all('table', id='statTable2')
-    all_player_info.append(parse_defense(defensive_table[0]))
+    all_player_info.append(floatify(parse_defense(defensive_table[0])))
 
     return all_player_info
 
@@ -150,6 +152,14 @@ def parse_defense(row_soup):
     return return_data
 
 
+def floatify(array):
+    for index in range(len(array)):
+        try:
+            array[index] = float(array[index])
+        except Exception as e:
+            # print(e)
+            pass
+    return array
 
 
 
