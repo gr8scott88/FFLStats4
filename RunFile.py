@@ -1,25 +1,34 @@
+import SeasonManager as sm
+import DataManager as dm
+import DataParser as dp
+import Helper
 
-import TeamManager as dm
+script_dir = r'C:\Users\gr8sc\PycharmProjects\FFLStats4'
 
-# \venv\Scripts\activate
+data_manager = dm.DataManager(script_dir)
+season_manager = sm.SeasonManager(data_manager)
 
-# loaded_team_info = pd.read_csv('FFL_Info.csv')
-# url = r"week3test.html"
+season_manager.load_all_season_data(4)
 
-ex_url = 'https://football.fantasysports.yahoo.com/f1/910981/4/team?&week=3'
-ex_saved_html = r'week3test.html'
+data_manager.quick_export()
 
-# get_all_info(team_info)
+season_manager.load_single_week_data(4)
 
+soup = Helper.get_soup_url('https://football.fantasysports.yahoo.com/f1/910981/9/team?&week=4')
 
-league = '910981'
-team = '4'
-week = '3'
-# loaded_soup = get_soup_single(league, team, week)
+parser = dp.DataParser()
 
-loaded_soup = dm.load_soup_single(ex_saved_html)
-all_week_info = dm.get_player_info(loaded_soup)
+offensive_player_table = soup.find_all('table', id='statTable0')
+op = offensive_player_table[0].find('tbody').find_all('tr')
 
+print('bye' in op[8])
 
-for player in all_week_info:
-    print(player)
+op_data = parser.parse_offensive_player(op[2])
+#print(op_data)
+
+data_soup = op[1].find_all('td')
+position = data_soup[0].contents[0].find_all('span')[0].contents[0]
+score = data_soup[6].contents[0].contents[0].contents[0]
+projected_score = data_soup[7].contents[0].contents[0]
+percent_start = data_soup[8].contents[0].contents[0].strip('%')
+return_data = [position, score, projected_score, percent_start]

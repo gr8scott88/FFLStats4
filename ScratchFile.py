@@ -87,7 +87,26 @@ tm.parse_defense(defense0)
 '''
 
 
+def gen_save_html_panda(row, week_id):
+    league_id = row['LeagueId']
+    team_id = row['TeamId']
+    save_name = 'week' + week_id + '_' + league_id + '_' + team_id + '.html'
+    return save_name
+
+
+def save_player_info(data_array):
+    print(data_array)
+    pass
+
+
+def save_team_info(data_array):
+    pass
 
 
 
 
+        team_columns = ['League', 'Team', 'Week', 'Time', 'RealScore', 'ProjScore']
+        team_frame = pd.DataFrame(columns=team_columns)
+
+        player_columns = ['League', 'Team', 'Week', 'Time', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
+        player_frame = pd.DataFrame(columns=player_columns)

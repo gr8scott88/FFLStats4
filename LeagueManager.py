@@ -1,39 +1,32 @@
-import sys
-import pandas as pd
-import os
 import TeamManager as tm
-import Objects
+import Helper
+import DataManager
 
 
-def load_league(league_info_file_path, week_id):
-    league_info = pd.read_csv(league_info_file_path)
+class LeagueManager:
+    def __init__(self, data_manager: DataManager):
+        self.data_manager = data_manager
+        self.team_manager = tm.TeamManager(data_manager)
 
-    all_league_data = []
+    def load_league(self, week_id):
+        league_info = self.data_manager.get_league_attributes()
 
-    team_columns = ['League', 'Team', 'Week', 'Time', 'RealScore', 'ProjScore']
-    team_frame = pd.DataFrame(columns=team_columns)
+        all_league_data = []
 
-    player_columns = ['League', 'Team', 'Week', 'Time', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
-    player_frame = pd.DataFrame(columns=player_columns)
+        for index, row in league_info.iterrows():
+            team_id = row['TeamId']
+            league_id = row['LeagueId']
+            unique_id = Helper.UniqueID(league_id, team_id, week_id)
+            print('Parsing team: ' + str(league_id) + r'/' + str(team_id))
+            all_data_for_team = self.team_manager.get_team_info(unique_id)
 
-    for index, row in league_info.iterrows():
-        team_id = row['TeamId']
-        league_id = row['LeagueId']
-        # all_data_for_team = tm.get_team_info(league_id, team_id, week_id)
-        unique_id = Objects.UniqueID(league_id, team_id, week_id)
-        all_data_for_team = tm.get_team_info(unique_id)
+            all_league_data.append(all_data_for_team)
+            print(all_data_for_team)
 
-        # data_with_id =
-        all_league_data.append(all_data_for_team)
-        print(all_data_for_team)
-
-    for team in all_league_data:
-        team_row = team[0] + team[1]
-        team_frame.loc[len(team_frame)] = team_row
-        player_array = team[2]
-        for player in player_array:
-            player_row = team[0] + player
-            player_frame.loc[len(team_frame)] = player_row
-
-    return [team_frame, player_frame]
-
+        for team in all_league_data:
+            team_row = team[0] + team[1]
+            self.data_manager.add_team_from_row(team_row)
+            player_array = team[2]
+            for player in player_array:
+                player_row = team[0] + player
+                self.data_manager.add_player_from_row(player_row)
