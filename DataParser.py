@@ -50,42 +50,50 @@ class DataParser:
 
     def parse_offensive_player(self, row_soup):
         data_soup = row_soup.find_all('td')
-        position = data_soup[0].contents[0].find_all('span')[0].contents[0]
-        if self.is_player_on_bye(row_soup):
-            return_data = [position, 0, 0, 0]
+        active_position = data_soup[0].contents[0].find_all('span')[0].contents[0]
+        player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
+        player_position = data_soup[1].find_all('span', class_='Fz-xxs')[0].contents[0].split('-')[1].strip()
+        if self.is_player_on_bye(data_soup):
+            return_data = [player_name, player_position, active_position, 0, 0, 0]
         else:
             # print(data_soup)
-            position = data_soup[0].contents[0].find_all('span')[0].contents[0]
+
+
             score = data_soup[6].contents[0].contents[0].contents[0]
             projected_score = data_soup[7].contents[0].contents[0]
             percent_start = data_soup[8].contents[0].contents[0].strip('%')
-            return_data = [position, score, projected_score, percent_start]
+            # ['League', 'Team', 'Week', 'Time', 'Name', 'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
+
+            return_data = [player_name, player_position, active_position, score, projected_score, percent_start]
             # print(return_data)
         return return_data
 
     def parse_kicker(self, row_soup):
         data_soup = row_soup.find_all('td')
         position = data_soup[0].contents[0].find_all('span')[0].contents[0]
-        if self.is_player_on_bye(row_soup):
-            return_data = [position, 0, 0, 0]
+        player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
+        if self.is_player_on_bye(data_soup):
+            print('Player: ' + player_name + ' is on Bye')
+            return_data = [player_name, 'K', 'K', 0, 0, 0]
         else:
             score = data_soup[5].contents[0].contents[0].contents[0]
             projected_score = data_soup[6].contents[0].contents[0]
             percent_start = data_soup[7].contents[0].contents[0].strip('%')
-            return_data = [position, score, projected_score, percent_start]
+            return_data = [player_name, 'K', 'K', score, projected_score, percent_start]
             # print(return_data)
         return return_data
 
     def parse_defense(self, row_soup):
         data_soup = row_soup.find_all('td')
         position = data_soup[0].contents[0].find_all('span')[0].contents[0]
-        if self.is_player_on_bye(row_soup):
-            return_data = [position, 0, 0, 0]
+        player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
+        if self.is_player_on_bye(data_soup):
+            return_data = [player_name, 'DEF', 'DEF', 0, 0, 0]
         else:
             score = data_soup[5].contents[0].contents[0].contents[0]
             projected_score = data_soup[6].contents[0].contents[0]
             percent_start = data_soup[7].contents[0].contents[0].strip('%')
-            return_data = [position, score, projected_score, percent_start]
+            return_data = [player_name, 'DEF', 'DEF', score, projected_score, percent_start]
             # print(return_data)
         return return_data
 

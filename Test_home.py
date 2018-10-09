@@ -1,9 +1,8 @@
-from bs4 import BeautifulSoup
-import requests
-import pandas as pd
-import numpy as np
 
+import time
+import os
 
-myFile = pd.read_csv('FFL_Info.csv')
+print(__file__)
+print(os.path.dirname(os.path.realpath(__file__)))
 
-x = np.array([2,3,4])
+time.sleep(5)

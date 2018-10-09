@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import requests
+import Helper
 
 
 class DataManager:
@@ -8,7 +9,7 @@ class DataManager:
         team_columns = ['League', 'Team', 'Week', 'Time', 'RealScore', 'ProjScore']
         self.team_frame = pd.DataFrame(columns=team_columns)
 
-        player_columns = ['League', 'Team', 'Week', 'Time', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
+        player_columns = ['League', 'Team', 'Week', 'Time', 'Name', 'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
         self.player_frame = pd.DataFrame(columns=player_columns)
 
         self.local_dir = self.set_local_dir(default_local_dir)
@@ -57,19 +58,17 @@ class DataManager:
         else:
             return False
 
-    def load_or_download_html(self, unique_id):
-        save_file = self.gen_save_file_name(unique_id)
+    def load_or_download_html(self, unique_id: Helper.UniqueID):
+        save_file = self.get_save_file_path(unique_id)
+        print('Save file: ' + save_file)
 
-        file_path = os.path.join(self.data_directory, save_file)
-        print(file_path)
-
-        if self.does_file_exist(file_path):
-            with open(file_path) as f:
+        if self.does_file_exist(save_file):
+            with open(save_file) as f:
                 print('Opening saved file')
                 return f.read()
         else:
             page = requests.get(self.gen_url(unique_id))
-            self.save_html(file_path, page.content)
+            self.save_html(save_file, page.content)
             print('Loading from website')
             return page.content
 
@@ -78,9 +77,17 @@ class DataManager:
         with open(file_path, 'wb') as f:
             f.write(str(html).encode('utf-8'))
 
+    def get_save_file_path(self, unique_id: Helper.UniqueID):
+        directory = self.get_folder_path(unique_id)
+        self.create_directory_if_necessary(directory)
+        return os.path.join(directory, self.get_file_name(unique_id))
+
+    def get_folder_path(self, unique_id: Helper.UniqueID):
+        return os.path.join(self.local_dir, 'data', str(unique_id.week))
+
     @staticmethod
-    def gen_save_file_name(unique_id):
-        save_name = 'week' + str(unique_id.week) + '_' + str(unique_id.league) + '_' + str(unique_id.team) + '.html'
+    def get_file_name(unique_id: Helper.UniqueID):
+        save_name = str(unique_id.league) + '_' + str(unique_id.team) + '_week' + str(unique_id.week) + '_' + str(unique_id.time) + '.html'
         return save_name
 
     @staticmethod
@@ -101,12 +108,18 @@ class DataManager:
         self.player_frame.to_csv(name)
 
     def quick_export(self):
-        quick_team_file = 'team.csv'
-        quick_player_file = 'player.csv'
+
+        quick_team_file = os.path.join(self.data_directory, 'team.csv')
+        quick_player_file = os.path.join(self.data_directory, 'player.csv')
         if os.path.isfile(quick_team_file):
-            os.remove('team.csv')
-        self.export_team_data('team.csv')
+            os.remove(quick_team_file)
+        self.export_team_data(quick_team_file)
 
         if os.path.isfile(quick_player_file):
-            os.remove('player.csv')
-        self.export_player_data('player.csv')
+            os.remove(quick_player_file)
+        self.export_player_data(quick_player_file)
+
+    @staticmethod
+    def create_directory_if_necessary(directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
