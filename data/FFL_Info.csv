@@ -1,21 +1,21 @@
-﻿Team,Order,TeamId,LeagueId
-Joe's Minions,1,7,910981
-Armchair Quarterback,2,9,910981
-Scotty Doesn't Know,3,4,910981
-Roger Rodgers!,4,8,910981
-Five Rings,5,5,910981
-Moose,6,3,910981
-Muddy Chicken Club,7,2,910981
-Living on a Prater,8,1,910981
-Lydia's Perfect Team,9,10,910981
-Meeseeks and Destroy,10,11,910981
-Playing With Fire,1,2,729457
-Webster Bullyboyz,2,10,729457
-The Hooligans Return,3,6,729457
-Professor Chaos,4,4,729457
-The Ominious Fog,5,8,729457
-King of the Hill,6,7,729457
-Dr. R. Delicious,7,1,729457
-Indian Lions,8,9,729457
-Handyman,9,5,729457
-The Smelliots,10,11,729457
+Team,Order,TeamId,LeagueId,LeagueName
+Joe's Minions,1,7,910981,AFC
+Armchair Quarterback,2,9,910981,AFC
+Scotty Doesn't Know,3,4,910981,AFC
+Roger Rodgers!,4,8,910981,AFC
+Five Rings,5,5,910981,AFC
+Moose,6,3,910981,AFC
+Muddy Chicken Club,7,2,910981,AFC
+Living on a Prater,8,1,910981,AFC
+Lydia's Perfect Team,9,10,910981,AFC
+Meeseeks and Destroy,10,11,910981,AFC
+Playing With Fire,1,2,729457,NFC
+Webster Bullyboyz,2,10,729457,NFC
+The Hooligans Return,3,6,729457,NFC
+Professor Chaos,4,4,729457,NFC
+The Ominious Fog,5,8,729457,NFC
+King of the Hill,6,7,729457,NFC
+Dr. R. Delicious,7,1,729457,NFC
+Indian Lions,8,9,729457,NFC
+Handyman,9,5,729457,NFC
+The Smelliots,10,11,729457,NFC

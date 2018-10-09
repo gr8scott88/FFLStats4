@@ -22,16 +22,34 @@ class DataParser:
         offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
 
         for index, player in enumerate(offensive_players):
-            # print('Parsing player: ' + str(index))
+            print('Parsing player: ' + str(index))
             all_player_info.append(help.floatify(self.parse_offensive_player(player)))
 
+        print('Parsing kicker')
         kicker_table = soup.find_all('table', id='statTable1')
         all_player_info.append(help.floatify(self.parse_kicker(kicker_table[0])))
 
+        print('Parsing defense')
         defensive_table = soup.find_all('table', id='statTable2')
         all_player_info.append(help.floatify(self.parse_defense(defensive_table[0])))
 
         return all_player_info
+
+    @staticmethod
+    def get_offensive_player_soup(soup, number):
+        offensive_player_table = soup.find_all('table', id='statTable0')
+        offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
+        return offensive_players[number]
+
+    @staticmethod
+    def get_defensive_player_soup(soup):
+        defensive_table = soup.find_all('table', id='statTable2')
+        return defensive_table[0]
+
+    @staticmethod
+    def get_kicker_player_soup(soup):
+        kicker_table = soup.find_all('table', id='statTable1')
+        return kicker_table[0]
 
     @staticmethod
     def get_team_score(soup):
@@ -49,6 +67,11 @@ class DataParser:
         return projscore
 
     def parse_offensive_player(self, row_soup):
+        data_indices = [0, 1, 5, 6, 7]
+        if self.does_contain_forecast(row_soup):
+            print('Has Forecast')
+            data_indices = [0, 1, 6, 7, 8]
+
         data_soup = row_soup.find_all('td')
         active_position = data_soup[0].contents[0].find_all('span')[0].contents[0]
         player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
@@ -57,42 +80,51 @@ class DataParser:
             return_data = [player_name, player_position, active_position, 0, 0, 0]
         else:
             # print(data_soup)
-
-
-            score = data_soup[6].contents[0].contents[0].contents[0]
-            projected_score = data_soup[7].contents[0].contents[0]
-            percent_start = data_soup[8].contents[0].contents[0].strip('%')
-            # ['League', 'Team', 'Week', 'Time', 'Name', 'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
+            score = data_soup[data_indices[2]].contents[0].contents[0].contents[0]
+            projected_score = data_soup[data_indices[3]].contents[0].contents[0]
+            percent_start = data_soup[data_indices[4]].contents[0].contents[0].strip('%')
+            # ['League', 'Team', 'Week', 'Time', 'Name', 'PlayerPos', 'ActivePos',
+            # 'RealScore', 'ProjScore', 'PctPlayed']
 
             return_data = [player_name, player_position, active_position, score, projected_score, percent_start]
             # print(return_data)
         return return_data
 
     def parse_kicker(self, row_soup):
+        data_indices = [0, 1, 5, 6, 7]
+        if self.does_contain_forecast(row_soup):
+            print('Has Forecast')
+            data_indices = [0, 1, 5, 6, 7]
+
         data_soup = row_soup.find_all('td')
-        position = data_soup[0].contents[0].find_all('span')[0].contents[0]
+        # position = data_soup[0].contents[0].find_all('span')[0].contents[0]
         player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
         if self.is_player_on_bye(data_soup):
             print('Player: ' + player_name + ' is on Bye')
             return_data = [player_name, 'K', 'K', 0, 0, 0]
         else:
-            score = data_soup[5].contents[0].contents[0].contents[0]
-            projected_score = data_soup[6].contents[0].contents[0]
-            percent_start = data_soup[7].contents[0].contents[0].strip('%')
+            score = data_soup[data_indices[2]].contents[0].contents[0].contents[0]
+            projected_score = data_soup[data_indices[3]].contents[0].contents[0]
+            percent_start = data_soup[data_indices[4]].contents[0].contents[0].strip('%')
             return_data = [player_name, 'K', 'K', score, projected_score, percent_start]
             # print(return_data)
         return return_data
 
     def parse_defense(self, row_soup):
+        data_indices = [0, 1, 5, 6, 7]
+        if self.does_contain_forecast(row_soup):
+            print('Has Forecast')
+            data_indices = [0, 1, 5, 6, 7]
+
         data_soup = row_soup.find_all('td')
-        position = data_soup[0].contents[0].find_all('span')[0].contents[0]
+        # position = data_soup[0].contents[0].find_all('span')[0].contents[0]
         player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
         if self.is_player_on_bye(data_soup):
             return_data = [player_name, 'DEF', 'DEF', 0, 0, 0]
         else:
-            score = data_soup[5].contents[0].contents[0].contents[0]
-            projected_score = data_soup[6].contents[0].contents[0]
-            percent_start = data_soup[7].contents[0].contents[0].strip('%')
+            score = data_soup[data_indices[2]].contents[0].contents[0].contents[0]
+            projected_score = data_soup[data_indices[3]].contents[0].contents[0]
+            percent_start = data_soup[data_indices[4]].contents[0].contents[0].strip('%')
             return_data = [player_name, 'DEF', 'DEF', score, projected_score, percent_start]
             # print(return_data)
         return return_data
@@ -103,4 +135,11 @@ class DataParser:
             return True
         else:
             return False
+
+    @staticmethod
+    def does_contain_forecast(soup):
+        array_length = len(soup)
+        return array_length == 23
+        # return str(soup).__contains__("Video Forecast")
+
 

@@ -16,8 +16,10 @@ class LeagueManager:
         for index, row in league_info.iterrows():
             team_id = row['TeamId']
             league_id = row['LeagueId']
-            unique_id = Helper.UniqueID(league_id, team_id, week_id)
-            print('Parsing team: ' + str(league_id) + r'/' + str(team_id))
+            team_name = row['Team']
+            league_name = row['LeagueName']
+            unique_id = Helper.UniqueID(league_id, league_name, team_id, team_name, week_id)
+            print('Parsing team: ' + str(league_name) + r' / ' + str(team_name)+ '(' + str(league_id) + r'/' + str(team_id) + ')')
             all_data_for_team = self.team_manager.get_team_info(unique_id)
 
             all_league_data.append(all_data_for_team)

@@ -6,10 +6,14 @@ import Helper
 
 class DataManager:
     def __init__(self, default_local_dir=None):
-        team_columns = ['League', 'Team', 'Week', 'Time', 'RealScore', 'ProjScore']
+        # team_columns = ['LeagueID', 'TeamID', 'Week', 'Time', 'RealScore', 'ProjScore']
+        team_columns = ['LeagueID', 'LeagueName', 'TeamID', 'TeamName', 'Week', 'Time', 'RealScore', 'ProjScore']
         self.team_frame = pd.DataFrame(columns=team_columns)
 
-        player_columns = ['League', 'Team', 'Week', 'Time', 'Name', 'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
+        # player_columns = ['LeagueID', 'TeamID', 'Week', 'Time', 'Name', 'PlayerPos',
+        # 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
+        player_columns = ['LeagueID', 'LeagueName', 'TeamID', 'TeamName', 'Week', 'Time', 'Name', 'PlayerPos',
+                          'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
         self.player_frame = pd.DataFrame(columns=player_columns)
 
         self.local_dir = self.set_local_dir(default_local_dir)
@@ -67,9 +71,11 @@ class DataManager:
                 print('Opening saved file')
                 return f.read()
         else:
-            page = requests.get(self.gen_url(unique_id))
+            url = self.gen_url(unique_id)
+            page = requests.get(url)
             self.save_html(save_file, page.content)
             print('Loading from website')
+            print(url)
             return page.content
 
     @staticmethod
@@ -87,7 +93,7 @@ class DataManager:
 
     @staticmethod
     def get_file_name(unique_id: Helper.UniqueID):
-        save_name = str(unique_id.league) + '_' + str(unique_id.team) + '_week' + str(unique_id.week) + '_' + str(unique_id.time) + '.html'
+        save_name = str(unique_id.league_id) + '_' + str(unique_id.team_id) + '_week' + str(unique_id.week) + '_' + str(unique_id.time) + '.html'
         return save_name
 
     @staticmethod
@@ -123,3 +129,18 @@ class DataManager:
     def create_directory_if_necessary(directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
+
+    def export_weekly_team_data(self, week):
+        pass
+
+    def cum_sum_position_by_week(self, pos: str, week: int):
+        weekly_players = self.player_frame.loc[pd['Week'] == week]
+        weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] ==  pos]
+        result = weekly_players_by_pos.groupby(['LeagueID', 'TeamID']).sum()
+        return result
+
+    def max_score_position_by_week(self, pos: str, week: int):
+        weekly_players = self.player_frame.loc[pd['Week'] == week]
+        weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] == pos]
+        result = weekly_players_by_pos.groupby(['LeagueID', 'TeamID']).max()
+        return result[['TeamName', 'RealScore']]
