@@ -15,21 +15,21 @@ class DataParser:
         return player_stats
 
     def get_player_info(self, soup):
-        print('Parsing offensive players')
+        # print('Parsing offensive players')
         all_player_info = []
 
         offensive_player_table = soup.find_all('table', id='statTable0')
         offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
 
         for index, player in enumerate(offensive_players):
-            print('Parsing player: ' + str(index))
+            # print('Parsing player: ' + str(index))
             all_player_info.append(help.floatify(self.parse_offensive_player(player)))
 
-        print('Parsing kicker')
+        # print('Parsing kicker')
         kicker_table = soup.find_all('table', id='statTable1')
         all_player_info.append(help.floatify(self.parse_kicker(kicker_table[0])))
 
-        print('Parsing defense')
+        # print('Parsing defense')
         defensive_table = soup.find_all('table', id='statTable2')
         all_player_info.append(help.floatify(self.parse_defense(defensive_table[0])))
 
@@ -113,7 +113,7 @@ class DataParser:
     def parse_defense(self, row_soup):
         data_indices = [0, 1, 5, 6, 7]
         if self.does_contain_forecast(row_soup):
-            print('Has Forecast')
+            # print('Has Forecast')
             data_indices = [0, 1, 5, 6, 7]
 
         data_soup = row_soup.find_all('td')

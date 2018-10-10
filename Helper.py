@@ -3,16 +3,17 @@ import requests
 
 
 class UniqueID:
-    def __init__(self, league_id, league_name, team_id, team_name, week_id, time_id=0):
+    def __init__(self, league_id, league_name, team_id, team_name, team_order, week_id, time_id=0):
         self.league_id = league_id
         self.team_id = team_id
         self.week = week_id
         self.time = time_id
         self.team_name = team_name
         self.league_name = league_name
+        self.team_order = team_order
 
     def get_id_array(self):
-        return [self.league_id, self.league_name, self.team_id, self.team_name, self.week, self.time]
+        return [self.league_id, self.league_name, self.team_id, self.team_name, self.team_order, self.week, self.time]
 
     def get_id_string(self):
         return 'ID: ' + 'Week ' + str(self.week) + ' Time ' + str(self.time) + ', ' + str(self.league_id) + ", " + str(self.team_id)

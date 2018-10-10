@@ -17,13 +17,14 @@ class LeagueManager:
             team_id = row['TeamId']
             league_id = row['LeagueId']
             team_name = row['Team']
+            team_order = row['Order']
             league_name = row['LeagueName']
-            unique_id = Helper.UniqueID(league_id, league_name, team_id, team_name, week_id)
+            unique_id = Helper.UniqueID(league_id, league_name, team_id, team_name, team_order, week_id)
             print('Parsing team: ' + str(league_name) + r' / ' + str(team_name)+ '(' + str(league_id) + r'/' + str(team_id) + ')')
             all_data_for_team = self.team_manager.get_team_info(unique_id)
 
             all_league_data.append(all_data_for_team)
-            print(all_data_for_team)
+            # print(all_data_for_team)
 
         for team in all_league_data:
             team_row = team[0] + team[1]

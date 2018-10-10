@@ -7,13 +7,13 @@ import Helper
 class DataManager:
     def __init__(self, default_local_dir=None):
         # team_columns = ['LeagueID', 'TeamID', 'Week', 'Time', 'RealScore', 'ProjScore']
-        team_columns = ['LeagueID', 'LeagueName', 'TeamID', 'TeamName', 'Week', 'Time', 'RealScore', 'ProjScore']
+        team_columns = ['LeagueID', 'LeagueName', 'TeamID', 'TeamName', 'TeamOrder', 'Week', 'Time', 'RealScore', 'ProjScore']
         self.team_frame = pd.DataFrame(columns=team_columns)
 
         # player_columns = ['LeagueID', 'TeamID', 'Week', 'Time', 'Name', 'PlayerPos',
         # 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
-        player_columns = ['LeagueID', 'LeagueName', 'TeamID', 'TeamName', 'Week', 'Time', 'Name', 'PlayerPos',
-                          'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
+        player_columns = ['LeagueID', 'LeagueName', 'TeamID', 'TeamName', 'TeamOrder', 'Week', 'Time', 'Name',
+                          'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
         self.player_frame = pd.DataFrame(columns=player_columns)
 
         self.local_dir = self.set_local_dir(default_local_dir)
