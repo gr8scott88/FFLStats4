@@ -1,16 +1,22 @@
-import SeasonManager as sm
+import League as lm
 import DataManager as dm
-import DataParser as dp
+import PlayerParser as dp
 import StatManager as stat
+
+
+
+AFC = 910981
+NFC = 729457
 
 # script_dir = r'C:\Users\gr8sc\PycharmProjects\FFLStats4'
 script_dir = r'C:\Dev\Python\Projects\FFLStats4'
 
-data_manager = dm.DataManager(script_dir)
-season_manager = sm.SeasonManager(data_manager)
-parser = dp.DataParser()
 
-season_manager.load_single_week_data(5)
+
+data_manager = dm.DataManager(script_dir)
+parser = dp.PlayerParser()
+
+
 
 stats = stat.StatManager(data_manager)
 

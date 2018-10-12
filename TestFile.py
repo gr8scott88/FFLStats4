@@ -1,6 +1,6 @@
 
-import TeamManager as tm
-import LeagueManager as lm
+import Team as tm
+import League as lm
 import os
 import pandas as pd
 from bs4 import BeautifulSoup

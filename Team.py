@@ -1,12 +1,12 @@
 from bs4 import BeautifulSoup
-import DataManager
-import DataParser as dp
+import TeamParser as tp
+import DATACONTRACT
 
 
-class TeamManager:
-    def __init__(self, data_manager: DataManager):
-        self.data_manager = data_manager
-        self.data_parser = dp.DataParser()
+class Team:
+    def __init__(self, league):
+        self.parser = tp.PlayerParser()
+        self.league = league
 
     def get_team_info(self, unique_id):
         soup = self.get_soup(unique_id)
