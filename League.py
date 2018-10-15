@@ -3,6 +3,8 @@ import LeagueParser as lp
 import GLOBALS
 import os
 import pandas as pd
+import FileManager
+
 
 
 class League:
@@ -14,18 +16,14 @@ class League:
         self.league_info = []
 
     def load_league_info(self):
-        league_file = os.path.join(GLOBALS.ROOTDIR, str(self.league_id), str(self.league_id) + '_info.csv')
-        if os.path.isfile(league_file)
-        league_file = str(self.league_id) + '_info.csv'
-        league_dir_path = os.path.join(GLOBALS.ROOTDIR, str(self.league_id))
-        league_file_path = os.path.join(GLOBALS.ROOTDIR, str(self.league_id), league_file)
-        if os.path.isfile(league_file_path):
-            self.league_info = pd.read_csv(league_file_path)
-        else:
-            self.league_info = self.parser.parse_league_info(self.league_id)
-            if not os.path.exists(league_dir_path):
-                os.makedirs(league_dir_path)
-            self.league_info.to_csv(league_file_path)
+        league_dir = os.path.join(GLOBALS.ROOTDIR, str(self.league_id))
+        file_name = str(self.league_id) + '_info.csv'
+        league_info = FileManager.load_df(league_dir, file_name)
+        if not league_info:
+            league_info = self.parser.parse_league_info(self.league_id)
+            FileManager.save_df_to_file(league_dir, file_name, league_info)
+        print(league_info)
+        self.league_info = league_info
 
     def load_all_season_data(self, current_week):
         pass
