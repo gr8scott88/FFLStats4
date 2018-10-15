@@ -3,10 +3,11 @@ import TeamParser as tp
 import DATACONTRACT
 
 
+
 class Team:
-    def __init__(self, league):
+    def __init__(self, pagecontent):
         self.parser = tp.PlayerParser()
-        self.league = league
+        self.soup = BeautifulSoup(pagecontent, 'html.parser')
 
     def get_team_info(self, unique_id):
         soup = self.get_soup(unique_id)

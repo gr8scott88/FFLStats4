@@ -14,6 +14,8 @@ class League:
         self.league_info = []
 
     def load_league_info(self):
+        league_file = os.path.join(GLOBALS.ROOTDIR, str(self.league_id), str(self.league_id) + '_info.csv')
+        if os.path.isfile(league_file)
         league_file = str(self.league_id) + '_info.csv'
         league_dir_path = os.path.join(GLOBALS.ROOTDIR, str(self.league_id))
         league_file_path = os.path.join(GLOBALS.ROOTDIR, str(self.league_id), league_file)
