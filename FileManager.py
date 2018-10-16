@@ -3,6 +3,8 @@ import pandas as pd
 
 
 def save_df_to_file(directory, name, df: pd.DataFrame, overwrite=True):
+    if not does_directory_exist(directory):
+        create_directory(directory)
     save_file = os.path.join(directory, name)
     if overwrite:
         delete_file(save_file)
@@ -36,3 +38,27 @@ def does_file_exist(file_path):
         return True
     else:
         return False
+
+
+def does_directory_exist(directory):
+    if os.path.isdir(directory):
+        return True
+    else:
+        return False
+
+
+def create_directory(directory):
+    os.mkdir(directory)
+
+
+def load_html(directory, file):
+    html_file = os.path.join(directory, file)
+    if not does_file_exist(html_file):
+        return False
+    else:
+        with open(html_file) as f:
+            print('Opening saved html file')
+            return f.read()
+
+
+def get_html_file(league, team, week)

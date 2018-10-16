@@ -1,13 +1,27 @@
 from bs4 import BeautifulSoup
 import TeamParser as tp
 import DATACONTRACT
-
+import requests
+import WebHelper
+import GLOBALS
+import Webpage
+import FileManager
 
 
 class Team:
-    def __init__(self, pagecontent):
+    def __init__(self, league_id, team_id):
+        self.leaguid = league_id
+        self.teamid = team_id
+        self.soup = self.load_team_page()
         self.parser = tp.PlayerParser()
-        self.soup = BeautifulSoup(pagecontent, 'html.parser')
+
+    def load_team_page(self):
+        html_dir = os.pa
+        FileManager.load_html()
+        team_url = WebHelper.build_url(GLOBALS.URLROOT, self.leaguid, self.teamid)
+        webpage = Webpage.Webpage(team_url)
+
+        return webpage.get_soup()
 
     def get_team_info(self, unique_id):
         soup = self.get_soup(unique_id)
