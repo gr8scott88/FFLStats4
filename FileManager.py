@@ -57,8 +57,8 @@ def load_html(directory, file):
         return False
     else:
         with open(html_file) as f:
-            print('Opening saved html file')
+            # print('Opening saved html file')
             return f.read()
 
 
-def get_html_file(league, team, week)
+# def get_html_file(league, team, week)

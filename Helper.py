@@ -41,3 +41,16 @@ def floatify(array):
     return array
 
 
+def player_data_float_convert(player_data):
+    all_info = []
+    for player_info in player_data:
+        new_player = []
+        for item in range(len(player_info)):
+            try:
+                new_player.append(float(player_info[item]))
+            except Exception as e:
+                new_player.append(player_info[item])
+        all_info.append(new_player)
+    return all_info
+
+

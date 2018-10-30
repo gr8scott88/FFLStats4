@@ -1,58 +1,15 @@
-import Helper as help
-
 
 class PlayerParser:
     def __init__(self):
         pass
 
-    def parse_player_stats(self, soup):
-        player_stats = self.get_player_info(soup)
-        return player_stats
-
-    def get_player_info(self, soup):
-        # print('Parsing offensive players')
-        all_player_info = []
-
-        offensive_player_table = soup.find_all('table', id='statTable0')
-        offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
-
-        for index, player in enumerate(offensive_players):
-            # print('Parsing player: ' + str(index))
-            all_player_info.append(help.floatify(self.parse_offensive_player(player)))
-
-        # print('Parsing kicker')
-        kicker_table = soup.find_all('table', id='statTable1')
-        all_player_info.append(help.floatify(self.parse_kicker(kicker_table[0])))
-
-        # print('Parsing defense')
-        defensive_table = soup.find_all('table', id='statTable2')
-        all_player_info.append(help.floatify(self.parse_defense(defensive_table[0])))
-
-        return all_player_info
-
-    @staticmethod
-    def get_offensive_player_soup(soup, number):
-        offensive_player_table = soup.find_all('table', id='statTable0')
-        offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
-        return offensive_players[number]
-
-    @staticmethod
-    def get_defensive_player_soup(soup):
-        defensive_table = soup.find_all('table', id='statTable2')
-        return defensive_table[0]
-
-    @staticmethod
-    def get_kicker_player_soup(soup):
-        kicker_table = soup.find_all('table', id='statTable1')
-        return kicker_table[0]
-
-    def parse_offensive_player(self, row_soup):
+    def parse_offensive_player(self, soup):
         data_indices = [0, 1, 5, 6, 7]
-        if self.does_contain_forecast(row_soup):
+        if self.does_contain_forecast(soup):
             print('Has Forecast')
             data_indices = [0, 1, 6, 7, 8]
 
-        data_soup = row_soup.find_all('td')
+        data_soup = soup.find_all('td')
         active_position = data_soup[0].contents[0].find_all('span')[0].contents[0]
         player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
         player_position = data_soup[1].find_all('span', class_='Fz-xxs')[0].contents[0].split('-')[1].strip()
@@ -70,13 +27,13 @@ class PlayerParser:
             # print(return_data)
         return return_data
 
-    def parse_kicker(self, row_soup):
+    def parse_kicker(self, soup):
         data_indices = [0, 1, 5, 6, 7]
-        if self.does_contain_forecast(row_soup):
+        if self.does_contain_forecast(soup):
             print('Has Forecast')
             data_indices = [0, 1, 5, 6, 7]
 
-        data_soup = row_soup.find_all('td')
+        data_soup = soup.find_all('td')
         # position = data_soup[0].contents[0].find_all('span')[0].contents[0]
         player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
         if self.is_player_on_bye(data_soup):
@@ -90,13 +47,13 @@ class PlayerParser:
             # print(return_data)
         return return_data
 
-    def parse_defense(self, row_soup):
+    def parse_defense(self, soup):
         data_indices = [0, 1, 5, 6, 7]
-        if self.does_contain_forecast(row_soup):
+        if self.does_contain_forecast(soup):
             # print('Has Forecast')
             data_indices = [0, 1, 5, 6, 7]
 
-        data_soup = row_soup.find_all('td')
+        data_soup = soup.find_all('td')
         # position = data_soup[0].contents[0].find_all('span')[0].contents[0]
         player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
         if self.is_player_on_bye(data_soup):
@@ -121,5 +78,3 @@ class PlayerParser:
         array_length = len(soup)
         return array_length == 23
         # return str(soup).__contains__("Video Forecast")
-
-

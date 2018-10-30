@@ -11,10 +11,11 @@ class Webpage:
         self.content = page.content
         self.soup = BeautifulSoup(self.content, 'html.parser')
 
-    def save_team_html(self):
+    def save_team_html(self, week, time):
         file_path_info = self.parse_team_url()
+        print(file_path_info)
         file_path = os.path.join(file_path_info[0], file_path_info[2])
-        file_name = 'Team_' + str(file_path_info[1] + '.html')
+        file_name = str(file_path_info[1]) + '_' + str(time) + '.html'
         FileManager.save_html(file_path, file_name, self.content)
 
     def get_soup(self):

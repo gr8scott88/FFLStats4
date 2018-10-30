@@ -6,6 +6,9 @@ import DATACONTRACT
 import WebHelper
 import Webpage
 import pandas as pd
+import Team
+import DataManager
+
 
 
 class League:
@@ -13,6 +16,7 @@ class League:
         self.league_id = league_id
         self.parser = lp.LeagueParser()
         self.league_info = self.load_league_info()
+        self.data_manager = DataManager.DataManager()
 
     def load_league_info(self):
         league_dir = os.path.join(GLOBALS.ROOTDIR, str(self.league_id))
@@ -37,5 +41,25 @@ class League:
             self.load_single_week_data(week+1)
 
     def load_single_week_data(self, week_id):
-        for index, player in self.league_info.iterrows():
-            print(str(player[DATACONTRACT.TEAM_ID]) + r'/' + player[str(DATACONTRACT.TEAM_NAME)])
+        for index, fantasy_player in self.league_info.iterrows():
+            print(str(fantasy_player[DATACONTRACT.TEAM_ID]) + r'/' + fantasy_player[str(DATACONTRACT.TEAM_NAME)])
+            team_id = fantasy_player[DATACONTRACT.TEAM_ID]
+            team = Team.Team(self.league_id, team_id)
+            team.load_soup_for_week(week_id, 0)
+            team_data = team.parse_team_info()
+            unique_id = str(self.league_id) + '_' + str(team_id)
+            self.data_manager.add_team_info(team_data, unique_id)
+            team_player_data = team.parse_all_player_info()
+            self.data_manager.add_player_info(team_player_data, unique_id)
+
+    def load_data_point(self, week, time):
+        for index, fantasy_player in self.league_info.iterrows():
+            print(str(fantasy_player[DATACONTRACT.TEAM_ID]) + r'/' + fantasy_player[str(DATACONTRACT.TEAM_NAME)])
+            team_id = fantasy_player[DATACONTRACT.TEAM_ID]
+            team = Team.Team(self.league_id, team_id)
+            team.load_soup_for_week(week, 0)
+            team_data = team.parse_team_info()
+            unique_id = str(self.league_id) + '_' + str(team_id)
+            self.data_manager.add_team_info(team_data, [unique_id, week, time])
+            team_player_data = team.parse_all_player_info()
+            self.data_manager.add_player_info(team_player_data, [unique_id, week, time])

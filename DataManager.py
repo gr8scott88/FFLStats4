@@ -2,54 +2,34 @@ import pandas as pd
 import os
 import requests
 import Helper
+import DATACONTRACT
 
 
 class DataManager:
-    def __init__(self, default_local_dir=None):
-        # team_columns = ['LeagueID', 'TeamID', 'Week', 'Time', 'RealScore', 'ProjScore']
-        team_columns = ['LeagueID', 'LeagueName', 'TeamID', 'TeamName', 'TeamOrder', 'Week', 'Time', 'RealScore', 'ProjScore']
-        self.team_frame = pd.DataFrame(columns=team_columns)
-
-        # player_columns = ['LeagueID', 'TeamID', 'Week', 'Time', 'Name', 'PlayerPos',
-        # 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
-        player_columns = ['LeagueID', 'LeagueName', 'TeamID', 'TeamName', 'TeamOrder', 'Week', 'Time', 'Name',
-                          'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
-        self.player_frame = pd.DataFrame(columns=player_columns)
-
-        self.local_dir = self.set_local_dir(default_local_dir)
+    def __init__(self):
+        self.team_score_frame = pd.DataFrame(columns=DATACONTRACT.TEAMSCORECOLS)
+        self.player_score_frame = pd.DataFrame(columns=DATACONTRACT.PLAYERSCORECOLS)
+        self.team_info_frame = pd.DataFrame(columns=DATACONTRACT.TEAMINFOCOLS)
 
         self.data_folder = 'data'
         self.league_data_file = 'FFL_Info.csv'
 
-        self.data_file_path = os.path.join(self.local_dir, self.data_folder, self.league_data_file)
-        self.data_directory = os.path.join(self.local_dir, self.data_folder)
+        self.data_file_path = os.path.join(self.data_folder, self.league_data_file)
+        self.data_directory = os.path.join(self.data_folder)
 
     def add_team_frame(self, team_frame):
-        self.team_frame.append(team_frame)
+        self.team_score_frame.append(team_frame)
 
     def add_team_from_row(self, team_row):
-        self.team_frame.loc[len(self.team_frame)] = team_row
+        print(team_row)
+        self.team_score_frame.loc[len(self.team_score_frame)] = team_row
 
     def add_player_frame(self, player_frame):
-        self.player_frame.append(player_frame)
+        self.player_score_frame.append(player_frame)
 
     def add_player_from_row(self, player_row):
-        self.player_frame.loc[len(self.player_frame)] = player_row
-
-    @staticmethod
-    def set_local_dir(default_dir):
-        try:
-            script_path = os.path.dirname(os.path.realpath(__file__))
-        except Exception as e:
-            if default_dir is not None:
-                script_path = default_dir
-            else:
-                script_path = 'NA'
-                print('Must provide a default script path')
-        return script_path
-
-    def get_league_info_directory(self) -> str:
-        return self.data_file_path
+        print(player_row)
+        self.player_score_frame.loc[len(self.player_score_frame)] = player_row
 
     def get_league_attributes(self):
         league_info = pd.read_csv(self.data_file_path)
@@ -102,19 +82,18 @@ class DataManager:
         return parse_url
 
     def get_team_data(self):
-        return self.team_frame
+        return self.team_score_frame
 
     def get_player_data(self):
-        return self.player_frame
+        return self.player_score_frame
 
     def export_team_data(self, name):
-        self.team_frame.to_csv(name)
+        self.team_score_frame.to_csv(name)
 
     def export_player_data(self, name):
-        self.player_frame.to_csv(name)
+        self.player_score_frame.to_csv(name)
 
     def quick_export(self):
-
         quick_team_file = os.path.join(self.data_directory, 'team.csv')
         quick_player_file = os.path.join(self.data_directory, 'player.csv')
         if os.path.isfile(quick_team_file):
@@ -133,14 +112,23 @@ class DataManager:
     def export_weekly_team_data(self, week):
         pass
 
+    def add_team_info(self, team_info_array, unique_info):
+        full_team_data = unique_info + team_info_array
+        self.add_team_from_row(full_team_data)
+
+    def add_player_info(self, player_info_array, unique_info):
+        for row in player_info_array:
+            full_player_data = unique_info + row
+            self.add_player_from_row(full_player_data)
+
     def cum_sum_position_by_week(self, pos: str, week: int):
-        weekly_players = self.player_frame.loc[pd['Week'] == week]
+        weekly_players = self.player_score_frame.loc[pd['Week'] == week]
         weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] ==  pos]
         result = weekly_players_by_pos.groupby(['LeagueID', 'TeamID']).sum()
         return result
 
     def max_score_position_by_week(self, pos: str, week: int):
-        weekly_players = self.player_frame.loc[pd['Week'] == week]
+        weekly_players = self.player_score_frame.loc[pd['Week'] == week]
         weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] == pos]
         result = weekly_players_by_pos.groupby(['LeagueID', 'TeamID']).max()
         return result[['TeamName', 'RealScore']]

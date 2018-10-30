@@ -7,3 +7,5 @@ except Exception as e:
     print('Script not being run dynamically')
 URLROOT = r'https://football.fantasysports.yahoo.com/f1/'
 
+MAXTIMESLICES = 20
+
