@@ -10,3 +10,8 @@ TEAMSCORECOLS = ['UniqueID', 'Week', 'Time', 'RealScore', 'ProjScore']
 #                   'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
 PLAYERSCORECOLS = ['UniqueID', 'Week', 'Time', 'Name',
                    'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
+LEAGUEINFOCOLS = ['UniqueID', 'LeagueID', 'TeamID', 'TeamName']
+LEAGUETRACKERCOLS = ['UniqueID', 'LeagueId', 'LeagueName', 'Order', 'TeamId', 'TeamName']
+
+# UniqueID	LeagueID	TeamID	TeamName	TrackerOrder
+

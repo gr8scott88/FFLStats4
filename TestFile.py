@@ -16,13 +16,19 @@ p = t[0].find_all('a', class_='F-link')
 
 
 import League
-league_id = 910981
-league = League.League(league_id)
+import DataManager
 
-#league.load_single_week_data(1)
+data_manager = DataManager.DataManager()
+# league_id = 910981
+league_id = 729457
+league = League.League(league_id, data_manager)
+
+# league.load_single_week_data(1)
 
 # league.load_data_point(1, 0)
-league.load_data_point(2, 0)
+# league.load_data_point(2, 0)
+
+league.load_all_data_points(8)
 
 import Team
 team_id = 1

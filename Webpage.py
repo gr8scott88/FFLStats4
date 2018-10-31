@@ -14,8 +14,13 @@ class Webpage:
     def save_team_html(self, week, time):
         file_path_info = self.parse_team_url()
         print(file_path_info)
-        file_path = os.path.join(file_path_info[0], file_path_info[2])
+        # file_path = os.path.join(file_path_info[0], file_path_info[2]
+        league_dir = file_path_info[0]
+        week_dir = 'week_' + str(week)
+        file_path = os.path.join(league_dir, week_dir)
         file_name = str(file_path_info[1]) + '_' + str(time) + '.html'
+        # print(file_path)
+        # print(file_name)
         FileManager.save_html(file_path, file_name, self.content)
 
     def get_soup(self):

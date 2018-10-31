@@ -26,6 +26,8 @@ def load_df(directory, name):
 
 
 def save_html(directory, name, html, overwrite=True):
+    if not does_directory_exist(directory):
+        create_directory(directory)
     save_file = os.path.join(directory, name)
     if overwrite:
         delete_file(save_file)

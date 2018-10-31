@@ -9,13 +9,16 @@ class DataManager:
     def __init__(self):
         self.team_score_frame = pd.DataFrame(columns=DATACONTRACT.TEAMSCORECOLS)
         self.player_score_frame = pd.DataFrame(columns=DATACONTRACT.PLAYERSCORECOLS)
-        self.team_info_frame = pd.DataFrame(columns=DATACONTRACT.TEAMINFOCOLS)
+        self.league_info_frame = pd.DataFrame(columns=DATACONTRACT.TEAMINFOCOLS)
+        self.league_tracker_frame = pd.DataFrame(columns=DATACONTRACT.LEAGUETRACKERCOLS)
 
         self.data_folder = 'data'
         self.league_data_file = 'FFL_Info.csv'
 
         self.data_file_path = os.path.join(self.data_folder, self.league_data_file)
         self.data_directory = os.path.join(self.data_folder)
+
+        self.add_tracker_info(self.load_tracker_info())
 
     def add_team_frame(self, team_frame):
         self.team_score_frame.append(team_frame)
@@ -27,11 +30,22 @@ class DataManager:
     def add_player_frame(self, player_frame):
         self.player_score_frame.append(player_frame)
 
+    def add_league_info(self, league_array):
+        print(league_array)
+        for row in league_array:
+            print(row)
+            self.league_info_frame.loc[len(self.league_info_frame)] = row
+
+    def add_tracker_info(self, tracker_array):
+        print(tracker_array)
+        for row in tracker_array:
+            self.league_tracker_frame.loc[len(self.league_tracker_frame)] = row
+
     def add_player_from_row(self, player_row):
         print(player_row)
         self.player_score_frame.loc[len(self.player_score_frame)] = player_row
 
-    def get_league_attributes(self):
+    def load_tracker_info(self):
         league_info = pd.read_csv(self.data_file_path)
         return league_info
 

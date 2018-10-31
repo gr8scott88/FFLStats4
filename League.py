@@ -10,13 +10,14 @@ import Team
 import DataManager
 
 
-
 class League:
-    def __init__(self, league_id):
+    def __init__(self, league_id, data_manager):
         self.league_id = league_id
         self.parser = lp.LeagueParser()
         self.league_info = self.load_league_info()
-        self.data_manager = DataManager.DataManager()
+        # self.data_manager = DataManager.DataManager()
+        self.data_manager = data_manager
+        self.data_manager.add_league_info(self.league_info)
 
     def load_league_info(self):
         league_dir = os.path.join(GLOBALS.ROOTDIR, str(self.league_id))
@@ -63,3 +64,7 @@ class League:
             self.data_manager.add_team_info(team_data, [unique_id, week, time])
             team_player_data = team.parse_all_player_info()
             self.data_manager.add_player_info(team_player_data, [unique_id, week, time])
+
+    def load_all_data_points(self, current_week):
+        for week in range(current_week):
+            self.load_data_point(week+1, 0)

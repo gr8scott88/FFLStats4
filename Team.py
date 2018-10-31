@@ -29,7 +29,7 @@ class Team:
             print(team_url)
             webpage = Webpage.Webpage(team_url)
             team_soup = webpage.get_soup()
-            webpage.save_team_html(time)
+            webpage.save_team_html(week, time)
         else:
             print('HTML loaded from file')
             print(os.path.join(html_dir, html_file_name))

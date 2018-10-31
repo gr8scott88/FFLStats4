@@ -17,9 +17,12 @@ class LeagueParser:
             info = self.parse_href(href)
             league_id = info[0]
             team_id = info[1]
-            league_info.append([league_id, team_id, team_name])
-        league_frame = pd.DataFrame(league_info, columns=[DATACONTRACT.LEAGUECOLS[0], DATACONTRACT.LEAGUECOLS[1],
-                                                          DATACONTRACT.LEAGUECOLS[2]])
+            unique_id = str(league_id + '_' + str(team_id))
+            league_info.append([unique_id, league_id, team_id, team_name])
+        league_frame = pd.DataFrame(league_info, columns=[DATACONTRACT.LEAGUEINFOCOLS[0],
+                                                          DATACONTRACT.LEAGUEINFOCOLS[1],
+                                                          DATACONTRACT.LEAGUEINFOCOLS[2],
+                                                          DATACONTRACT.LEAGUEINFOCOLS[3]])
         return league_frame
 
     @staticmethod

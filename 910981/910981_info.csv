@@ -1,11 +1,11 @@
-,LeagueID,TeamID,TeamName
-0,910981,1,Living on a Prater
-1,910981,8,Roger Rodgers!
-2,910981,2,Muddy Chicken Club
-3,910981,7,Joe's Minions
-4,910981,3,Moose
-5,910981,5,Five Rings
-6,910981,4,Scotty Doesn't Know
-7,910981,11,Meeseeks and Destroy
-8,910981,9,Armchair Quarterback
-9,910981,10,Lydia's Perfect Team
+,UniqueID,LeagueID,TeamID,TeamName
+0,910981_1,910981,1,Living on a Prater
+1,910981_10,910981,10,Lydia's Perfect Team
+2,910981_2,910981,2,Muddy Chicken Club
+3,910981_9,910981,9,Armchair Quarterback
+4,910981_3,910981,3,Moose
+5,910981_8,910981,8,Roger Rodgers!
+6,910981_4,910981,4,Scotty Doesn't Know
+7,910981_7,910981,7,Joe's Minions
+8,910981_5,910981,5,Five Rings
+9,910981_11,910981,11,Meeseeks and Destroy
