@@ -6,7 +6,7 @@ class PlayerParser:
     def parse_offensive_player(self, soup):
         data_indices = [0, 1, 5, 6, 7]
         if self.does_contain_forecast(soup):
-            print('Has Forecast')
+            # print('Has Forecast')
             data_indices = [0, 1, 6, 7, 8]
 
         data_soup = soup.find_all('td')
@@ -30,14 +30,14 @@ class PlayerParser:
     def parse_kicker(self, soup):
         data_indices = [0, 1, 5, 6, 7]
         if self.does_contain_forecast(soup):
-            print('Has Forecast')
+            # print('Has Forecast')
             data_indices = [0, 1, 5, 6, 7]
 
         data_soup = soup.find_all('td')
         # position = data_soup[0].contents[0].find_all('span')[0].contents[0]
         player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
         if self.is_player_on_bye(data_soup):
-            print('Player: ' + player_name + ' is on Bye')
+            # print('Player: ' + player_name + ' is on Bye')
             return_data = [player_name, 'K', 'K', 0, 0, 0]
         else:
             score = data_soup[data_indices[2]].contents[0].contents[0].contents[0]

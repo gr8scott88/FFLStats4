@@ -19,7 +19,7 @@ class League:
         self.data_manager = data_manager
         self.data_manager.add_league_info(self.league_info)
 
-    def load_league_info(self):
+    def load_league_info(self) -> pd.DataFrame:
         league_dir = os.path.join(GLOBALS.ROOTDIR, str(self.league_id))
         print(league_dir)
         file_name = str(self.league_id) + '_info.csv'
@@ -32,7 +32,10 @@ class League:
             print(league_url)
             webpage = Webpage.Webpage(league_url)
             league_info = self.parser.parse_league_info(webpage.get_soup())
+            # df = DataFrame(table, columns=headers)
+            league_info = pd.DataFrame(league_info, DATACONTRACT.LEAGUEINFOCOLS)
             FileManager.save_df_to_file(league_dir, file_name, league_info)
+        print('Loaded League Info:')
         print(league_info)
         # self.league_info = league_info
         return league_info
@@ -67,4 +70,5 @@ class League:
 
     def load_all_data_points(self, current_week):
         for week in range(current_week):
+            print('Parsing week ' + str(current_week+1))
             self.load_data_point(week+1, 0)

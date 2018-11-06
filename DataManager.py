@@ -10,7 +10,7 @@ class DataManager:
         self.team_score_frame = pd.DataFrame(columns=DATACONTRACT.TEAMSCORECOLS)
         self.player_score_frame = pd.DataFrame(columns=DATACONTRACT.PLAYERSCORECOLS)
         self.league_info_frame = pd.DataFrame(columns=DATACONTRACT.TEAMINFOCOLS)
-        self.league_tracker_frame = pd.DataFrame(columns=DATACONTRACT.LEAGUETRACKERCOLS)
+        # self.league_tracker_frame = pd.DataFrame(columns=DATACONTRACT.LEAGUETRACKERCOLS)
 
         self.data_folder = 'data'
         self.league_data_file = 'FFL_Info.csv'
@@ -18,23 +18,22 @@ class DataManager:
         self.data_file_path = os.path.join(self.data_folder, self.league_data_file)
         self.data_directory = os.path.join(self.data_folder)
 
-        self.add_tracker_info(self.load_tracker_info())
+        self.league_tracker_frame = self.load_tracker_info()
+
+        # self.add_tracker_info(self.load_tracker_info())
 
     def add_team_frame(self, team_frame):
         self.team_score_frame.append(team_frame)
 
     def add_team_from_row(self, team_row):
-        print(team_row)
+        # print(team_row)
         self.team_score_frame.loc[len(self.team_score_frame)] = team_row
 
     def add_player_frame(self, player_frame):
         self.player_score_frame.append(player_frame)
 
-    def add_league_info(self, league_array):
-        print(league_array)
-        for row in league_array:
-            print(row)
-            self.league_info_frame.loc[len(self.league_info_frame)] = row
+    def add_league_info(self, league_info_df):
+        self.league_info_frame = league_info_df
 
     def add_tracker_info(self, tracker_array):
         print(tracker_array)
@@ -42,11 +41,12 @@ class DataManager:
             self.league_tracker_frame.loc[len(self.league_tracker_frame)] = row
 
     def add_player_from_row(self, player_row):
-        print(player_row)
+        # print(player_row)
         self.player_score_frame.loc[len(self.player_score_frame)] = player_row
 
     def load_tracker_info(self):
         league_info = pd.read_csv(self.data_file_path)
+        print(league_info)
         return league_info
 
     @staticmethod
@@ -146,3 +146,19 @@ class DataManager:
         weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] == pos]
         result = weekly_players_by_pos.groupby(['LeagueID', 'TeamID']).max()
         return result[['TeamName', 'RealScore']]
+
+    def get_complete_team_frame(self):
+        # merged = pd.merge(league.data_manager.team_score_frame,
+        # league.data_manager.league_tracker_frame, on='UniqueID')
+        merged = pd.merge(self.team_score_frame, self.league_tracker_frame, on='UniqueID')
+        return merged
+
+    def export_complete_team_frame(self, league):
+        quick_league_file = os.path.join(self.data_directory, 'League_' + str(league) + '.csv')
+        if os.path.isfile(quick_league_file):
+            os.remove(quick_league_file)
+        complete_team_frame = self.get_complete_team_frame()
+        sorted_team_data = complete_team_frame.sort_values(by=['Week', 'Order'])
+        # complete_team_frame.sort_values(by=['Order', 'Week'])
+        print('Exporting team info to ' + str(quick_league_file))
+        sorted_team_data.to_csv(quick_league_file)
