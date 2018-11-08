@@ -10,7 +10,6 @@ class DataManager:
         self.team_score_frame = pd.DataFrame(columns=DATACONTRACT.TEAMSCORECOLS)
         self.player_score_frame = pd.DataFrame(columns=DATACONTRACT.PLAYERSCORECOLS)
         self.league_info_frame = pd.DataFrame(columns=DATACONTRACT.TEAMINFOCOLS)
-        # self.league_tracker_frame = pd.DataFrame(columns=DATACONTRACT.LEAGUETRACKERCOLS)
 
         self.data_folder = 'data'
         self.league_data_file = 'FFL_Info.csv'
@@ -19,11 +18,6 @@ class DataManager:
         self.data_directory = os.path.join(self.data_folder)
 
         self.league_tracker_frame = self.load_tracker_info()
-
-        # self.add_tracker_info(self.load_tracker_info())
-
-    def add_team_frame(self, team_frame):
-        self.team_score_frame.append(team_frame)
 
     def add_team_from_row(self, team_row):
         # print(team_row)
@@ -137,7 +131,7 @@ class DataManager:
 
     def cum_sum_position_by_week(self, pos: str, week: int):
         weekly_players = self.player_score_frame.loc[pd['Week'] == week]
-        weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] ==  pos]
+        weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] == pos]
         result = weekly_players_by_pos.groupby(['LeagueID', 'TeamID']).sum()
         return result
 
@@ -154,7 +148,7 @@ class DataManager:
         return merged
 
     def export_complete_team_frame(self, league):
-        quick_league_file = os.path.join(self.data_directory, 'League_' + str(league) + '.csv')
+        quick_league_file = os.path.join(self.data_directory, str(league) + '_TeamData.csv')
         if os.path.isfile(quick_league_file):
             os.remove(quick_league_file)
         complete_team_frame = self.get_complete_team_frame()

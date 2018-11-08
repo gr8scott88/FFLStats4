@@ -7,7 +7,7 @@ class LeagueParser:
     def __init__(self):
         pass
 
-    def parse_league_info(self, league_soup: BeautifulSoup):
+    def parse_league_info(self, league_soup: BeautifulSoup) -> pd.DataFrame:
         league_info = []
         league_table = league_soup.find_all('ul', class_='List-rich')
         players = league_table[0].find_all('a', class_='F-link')

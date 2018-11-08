@@ -36,11 +36,6 @@ class Team:
             team_soup = BeautifulSoup(loaded_html, 'html.parser')
         self.soup = team_soup
 
-    def load_soup_for_season(self, max_week):
-        for week in range(max_week):
-            for time in range(GLOBALS.MAXTIMESLICES):
-                print('Week: ' + str(week) + '_Time: '+ str(time))
-
     def parse_team_info(self):
         if not self.soup:
             print('Soup not loaded')
@@ -50,25 +45,7 @@ class Team:
             print(self.team_data)
             return self.team_data
 
-    def get_team_data(self):
-        print(self.team_data)
-        return self.team_data
-
-    def parse_player_info(self):
-        # player_table =
-        pass
-
-    def get_players(self, player_table):
-        # get players
-        pass
-
     def get_offensive_players(self):
-        # offensive_player_table = soup.find_all('table', id='statTable0')
-        # offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
-        #for index, player in enumerate(offensive_players):
-        #    # print('Parsing player: ' + str(index))
-        #     all_player_info.append(help.floatify(self.parse_offensive_player(player)))
-
         offensive_player_table = self.soup.find_all('table', id='statTable0')
         offensive_players = offensive_player_table[0].find('tbody').find_all('tr')
         return offensive_players
@@ -100,15 +77,3 @@ class Team:
         all_data.append(defense_data)
 
         return Helper.player_data_float_convert(all_data)
-
-
-
-
-
-
-
-
-
-
-
-
