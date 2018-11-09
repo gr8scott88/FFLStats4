@@ -9,7 +9,7 @@ class DataManager:
     def __init__(self):
         self.team_score_frame = pd.DataFrame(columns=DATACONTRACT.TEAMSCORECOLS)
         self.player_score_frame = pd.DataFrame(columns=DATACONTRACT.PLAYERSCORECOLS)
-        self.league_info_frame = pd.DataFrame(columns=DATACONTRACT.TEAMINFOCOLS)
+        self.j = pd.DataFrame(columns=DATACONTRACT.TEAMINFOCOLS)
 
         self.data_folder = 'data'
         self.league_data_file = 'FFL_Info.csv'
@@ -130,16 +130,22 @@ class DataManager:
             self.add_player_from_row(full_player_data)
 
     def cum_sum_position_by_week(self, pos: str, week: int):
-        weekly_players = self.player_score_frame.loc[pd['Week'] == week]
+        weekly_players = self.player_score_frame.loc[self.player_score_frame['Week'] == week]
         weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] == pos]
-        result = weekly_players_by_pos.groupby(['LeagueID', 'TeamID']).sum()
-        return result
+        result = weekly_players_by_pos.groupby(['UniqueID']).sum()
+        # result = result.reset_index() # The "UniqueID" was the index not a column,
+        # this makes it a column again so we can join
+
+        ordered = self.join_and_sort(result)
+        return ordered
+        # return result
 
     def max_score_position_by_week(self, pos: str, week: int):
-        weekly_players = self.player_score_frame.loc[pd['Week'] == week]
+        weekly_players = self.player_score_frame.loc[self.player_score_frame['Week'] == week]
         weekly_players_by_pos = weekly_players.loc[weekly_players['ActivePos'] == pos]
-        result = weekly_players_by_pos.groupby(['LeagueID', 'TeamID']).max()
-        return result[['TeamName', 'RealScore']]
+        result = weekly_players_by_pos.groupby(['UniqueID']).max()
+        ordered = self.join_and_sort(result)
+        return ordered
 
     def get_complete_team_frame(self):
         # merged = pd.merge(league.data_manager.team_score_frame,
@@ -149,10 +155,24 @@ class DataManager:
 
     def export_complete_team_frame(self, league):
         quick_league_file = os.path.join(self.data_directory, str(league) + '_TeamData.csv')
-        if os.path.isfile(quick_league_file):
-            os.remove(quick_league_file)
+        self.manage_file_existence(quick_league_file)
         complete_team_frame = self.get_complete_team_frame()
         sorted_team_data = complete_team_frame.sort_values(by=['Week', 'Order'])
         # complete_team_frame.sort_values(by=['Order', 'Week'])
         print('Exporting team info to ' + str(quick_league_file))
         sorted_team_data.to_csv(quick_league_file)
+
+    @staticmethod
+    def manage_file_existence(file):
+        if os.path.isfile(file):
+            os.remove(file)
+
+    def join_and_sort(self, result_frame: pd.DataFrame):
+        joined = self.league_tracker_frame.join(result_frame, on='UniqueID', how='right')
+        ordered = joined.sort_values(by='Order')
+        return ordered
+
+    def export_dataframe(self, data: pd.DataFrame, name: str):
+        output_path = os.path.join(self.data_directory, name + '.csv')
+        self.manage_file_existence(output_path)
+        data.to_csv(output_path)
