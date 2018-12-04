@@ -11,8 +11,15 @@ class PlayerParser:
 
         data_soup = soup.find_all('td')
         active_position = data_soup[0].contents[0].find_all('span')[0].contents[0]
+
+        if self.is_empty(soup):
+            return_data = ['None', active_position, active_position, 0, 0, 0]
+            return return_data
+        else:
+            player_position = data_soup[1].find_all('span', class_='Fz-xxs')[0].contents[0].split('-')[1].strip()
+
         player_name = data_soup[1].find_all('a', class_='Nowrap name F-link')[0].contents[0]
-        player_position = data_soup[1].find_all('span', class_='Fz-xxs')[0].contents[0].split('-')[1].strip()
+
         if self.is_player_on_bye(data_soup):
             return_data = [player_name, player_position, active_position, 0, 0, 0]
         else:
@@ -78,3 +85,7 @@ class PlayerParser:
         array_length = len(soup)
         return array_length == 23
         # return str(soup).__contains__("Video Forecast")
+
+    @staticmethod
+    def is_empty(soup):
+        return '(Empty)' in str(soup)
