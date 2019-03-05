@@ -7,12 +7,17 @@ import WebHelper
 import Webpage
 import pandas as pd
 import Team
+import DataManager
+import MatchParser as mp
+import DraftParser as dp
 
 
 class League:
-    def __init__(self, league_id, data_manager):
+    def __init__(self, league_id, data_manager: DataManager.DataManager):
         self.league_id = league_id
-        self.parser = lp.LeagueParser()
+        self.league_parser = lp.LeagueParser()
+        self.match_parser = mp.MatchParser()
+        self.draft_parser = dp.DraftParser()
         self.league_info = self.load_league_info()
         # self.data_manager = DataManager.DataManager()
         self.data_manager = data_manager
@@ -30,7 +35,7 @@ class League:
             print('Loading league info from:')
             print(league_url)
             webpage = Webpage.Webpage(league_url)
-            league_info = self.parser.parse_league_info(webpage.get_soup())
+            league_info = self.league_parser.parse_league_info(webpage.get_soup())
             # df = DataFrame(table, columns=headers)
             league_info = pd.DataFrame(league_info, DATACONTRACT.LEAGUEINFOCOLS)
             FileManager.save_df_to_file(league_dir, file_name, league_info)
@@ -55,3 +60,9 @@ class League:
         for week in range(current_week):
             print('Parsing week ' + str(current_week+1))
             self.load_data_point(week+1, 0)
+
+    def save_league_data(self):
+        teamfilename = str(self.league_id) + '_TeamData'
+        self.data_manager.export_team_data(teamfilename)
+        playerfilename = str(self.league_id) + '_PlayerData'
+        self.data_manager.export_player_data(playerfilename)
