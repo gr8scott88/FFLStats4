@@ -1,25 +1,26 @@
-import League
-import DataManager
+from models import League
+from utility import DataManager
+
+# currentWeek = 12
+targetWeek = 1
 
 
-currentWeek = 12
-targetWeek = 11
-
-
-nfc_id = 729457
-nfc_data = DataManager.DataManager()
-NFC = League.League(nfc_id, nfc_data)
-NFC.load_all_data_points(currentWeek)
-# NFC.load_data_point(targetWeek, 0)
-# nfc_data.export_complete_team_frame(nfc_id)
-
-
-afc_id = 910981
+afc_id = 609682
 afc_data = DataManager.DataManager()
 AFC = League.League(afc_id, afc_data)
 # AFC.load_all_data_points(currentWeek)
 AFC.load_data_point(targetWeek, 0)
 # afc_data.export_complete_team_frame(afc_id)
+
+
+nfc_id = 713428
+nfc_data = DataManager.DataManager()
+NFC = League.League(nfc_id, nfc_data)
+# NFC.load_all_data_points(currentWeek)
+NFC.load_data_point(targetWeek, 0)
+# nfc_data.export_complete_team_frame(nfc_id)
+
+
 
 
 

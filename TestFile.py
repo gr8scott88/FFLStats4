@@ -1,5 +1,5 @@
-import League
-import DataManager
+from models import League
+from utility import DataManager
 
 nfc_id = 729457
 nfc_data = DataManager.DataManager()
