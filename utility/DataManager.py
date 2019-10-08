@@ -6,18 +6,20 @@ from models import DATACONTRACT
 
 
 class DataManager:
-    def __init__(self):
+    def __init__(self, league_id: int):
         self.team_score_frame = pd.DataFrame(columns=DATACONTRACT.TEAMSCORECOLS)
         self.player_score_frame = pd.DataFrame(columns=DATACONTRACT.PLAYERSCORECOLS)
         self.j = pd.DataFrame(columns=DATACONTRACT.TEAMINFOCOLS)
 
-        self.data_folder = 'data_storage'
-        self.league_data_file = 'FFL_Info.csv'
+        self.league_id = league_id
 
-        self.data_file_path = os.path.join(self.data_folder, self.league_data_file)
-        self.data_directory = os.path.join(self.data_folder)
+        self.data_folder = 'data_archive'
+        self.league_data_file = 'League_Info.csv'
 
-        self.league_tracker_frame = self.load_tracker_info()
+        self.data_file_path = os.path.join(self.data_folder, str(self.league_id), self.league_data_file)
+        self.data_directory = os.path.join(self.data_folder, str(self.league_id))
+
+        self.league_info_frame = self.load_league_info()
 
     def add_team_from_row(self, team_row):
         # print(team_row)
@@ -32,16 +34,17 @@ class DataManager:
     def add_tracker_info(self, tracker_array):
         print(tracker_array)
         for row in tracker_array:
-            self.league_tracker_frame.loc[len(self.league_tracker_frame)] = row
+            self.league_info_frame.loc[len(self.league_info_frame)] = row
 
     def add_player_from_row(self, player_row):
         # print(player_row)
         self.player_score_frame.loc[len(self.player_score_frame)] = player_row
 
-    def load_tracker_info(self):
-        league_info = pd.read_csv(self.data_file_path)
-        print(league_info)
-        return league_info
+    def load_league_info(self):
+        if self.does_file_exist(self.data_file_path):
+            league_info = pd.read_csv(self.data_file_path)
+            print(league_info)
+            return league_info
 
     @staticmethod
     def does_file_exist(file_path):
@@ -150,7 +153,7 @@ class DataManager:
     def get_complete_team_frame(self):
         # merged = pd.merge(league.data_manager.team_score_frame,
         # league.data_manager.league_tracker_frame, on='UniqueID')
-        merged = pd.merge(self.team_score_frame, self.league_tracker_frame, on='UniqueID')
+        merged = pd.merge(self.team_score_frame, self.league_info_frame, on='UniqueID')
         return merged
 
     def export_complete_team_frame(self, league):
@@ -168,7 +171,7 @@ class DataManager:
             os.remove(file)
 
     def join_and_sort(self, result_frame: pd.DataFrame):
-        joined = self.league_tracker_frame.join(result_frame, on='UniqueID', how='right')
+        joined = self.league_info_frame.join(result_frame, on='UniqueID', how='right')
         ordered = joined.sort_values(by='Order')
         return ordered
 

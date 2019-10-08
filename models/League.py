@@ -4,17 +4,17 @@ import pandas as pd
 from models import Team, Webpage, DATACONTRACT
 from utility import DataManager, FileManager, WebHelper
 from web_parsing import MatchParser as mp, LeagueParser as lp, DraftParser as dp
+from data_storage.LocalDataManager import DataManager
 
 
 class League:
-    def __init__(self, league_id, data_manager: DataManager.DataManager):
+    def __init__(self, league_id):
         self.league_id = league_id
         self.league_parser = lp.LeagueParser()
         self.match_parser = mp.MatchParser()
         self.draft_parser = dp.DraftParser()
         self.league_info = self.load_league_info()
-        # self.data_manager = DataManager.DataManager()
-        self.data_manager = data_manager
+        self.data_manager = DataManager.DataManager()
         self.data_manager.add_league_info(self.league_info)
 
     def load_league_info(self) -> pd.DataFrame:
