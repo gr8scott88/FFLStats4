@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from web_parsing import TeamParser
+from web_parsing import TeamPageParser
 import GLOBALS
 from utility import FileManager, WebHelper
 import os
@@ -12,7 +12,7 @@ class Team:
         self.league_id = league_id
         self.team_id = team_id
         self.soup = False
-        self.parser = TeamParser.TeamParser()
+        self.parser = TeamPageParser.TeamParser()
         self.team_data = []
         self.player_data = []
 

@@ -2,7 +2,7 @@ from utility.DateManager import DateManager
 import configparser
 import os
 from utility.YahooWebHelper import YahooWebHelper
-from web_parsing.LeagueParser import LeagueParser
+from web_parsing.LeaguePageParser import LeaguePageParser
 import pandas as pd
 
 class LeagueManager:
@@ -29,7 +29,7 @@ class LeagueManager:
             for team in config['TEAMS'].values():
                 self.team_ids.append(team)
         else:
-            parser = LeagueParser(self.league_id, self.web_helper)
+            parser = LeaguePageParser(self.league_id, self.web_helper)
             df = parser.parse_league_info()
 
 

@@ -1,8 +1,9 @@
+from utility.YahooWebHelper import YahooWebHelper
 
 
 class TeamParser:
     def __init__(self):
-        pass
+        self.web_helper = YahooWebHelper()
 
     def parse_team_stats(self, soup):
         team_score = float(self.get_team_score(soup))
@@ -23,3 +24,6 @@ class TeamParser:
         projspans = projhtml[0].find_all('span')
         projscore = projspans[1].contents[0]
         return projscore
+
+    def get_team_roster(self):
+        pass
