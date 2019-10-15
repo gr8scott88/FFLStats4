@@ -1,5 +1,6 @@
 from models import Webpage
 import os
+import pandas as pd
 
 
 class LocalDataManager:
@@ -33,12 +34,25 @@ class LocalDataManager:
             return False
         self.get_soup(fpath)
 
+    def load_league_df(self, league_id):
+        try:
+            folder = gen_folder_path([league_id])
+            fpath = os.path.join(folder, f'{self.league_data}.csv')
+            df = pd.read_csv(fpath)
+            return df
+        except Exception as e:
+            return False
+
     def load_team_soup_by_week(self, league_id, team_id, week):
         folder = gen_folder_path([league_id, week])
         fpath = os.path.join(folder, f'{team_id}_{self.team_data}.html')
         if not os.path.exists(fpath):
             return False
         self.get_soup(fpath)
+
+    def load_matchup_df(self, league_id):
+        #TODO
+        return False
 
     def load_matchup_soup_by_week(self, league_id, team_id, week):
         folder = gen_folder_path([league_id, week])

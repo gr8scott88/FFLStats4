@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-
+import GLOBALS
 
 def save_df_to_file(directory, name, df: pd.DataFrame, overwrite=True):
     if not does_directory_exist(directory):
@@ -15,6 +15,9 @@ def delete_file(file_path):
     if os.path.exists(file_path):
         os.remove(file_path)
 
+def load_league_info(league_id, )
+    league_dir = os.path.join(GLOBALS.ROOTDIR, str(league_id))
+    file_name = str(league_id) + '_info.csv'
 
 def load_df(directory, name):
     df = False

@@ -1,0 +1,25 @@
+League
+	Init
+		Check to see if team info exists:
+			Yes:
+				Load it
+			No: 
+				Parse it
+		Check to see if matchup info exists:
+			Yes:
+				Load it
+			No:
+				Parse it
+				
+	Load all data:
+		Determine what week it is
+		For each week:
+			Determine whether data has been loaded:
+				Yes:
+					Load locally
+				No: 
+					Load webpage
+					Save webpage locally
+					Parse data
+					
+		

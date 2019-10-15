@@ -1,27 +1,14 @@
 import pandas as pd
-from bs4 import BeautifulSoup
 from models import DATACONTRACT
-from utility.YahooWebHelper import YahooWebHelper
-from data_storage.LocalDataManager import LocalDataManager
 
 
 class LeaguePageParser:
-    def __init__(self, league_id):
-        self.league_soup = BeautifulSoup
-        self.league_id = league_id
-        self.web_helper = YahooWebHelper()
-        self.local_data_manager = LocalDataManager()
+    def __init__(self):
+        pass
 
-    def load_league_soup(self):
-        result = self.local_data_manager.load_league_soup(self.league_id)
-        if not result:
-            self.league_soup = self.web_helper.get_league_soup(self.league_id)
-        else:
-            self.league_soup = result
-
-    def parse_league_info(self) -> pd.DataFrame:
+    def parse_league_info(self, league_page_soup) -> pd.DataFrame:
         league_info = []
-        players = self.get_player_table()
+        players = self.get_player_table(league_page_soup)
         for player in players:
             team_name = player.contents[0]
             href = player['href']
@@ -36,14 +23,15 @@ class LeaguePageParser:
                                                           DATACONTRACT.LEAGUEINFOCOLS[3]])
         return league_frame
 
-    def get_player_table(self):
-        league_table = self.league_soup.find_all('ul', class_='List-rich')
+    @staticmethod
+    def get_player_table(league_page_soup):
+        league_table = league_page_soup.find_all('ul', class_='List-rich')
         players = league_table[0].find_all('a', class_='F-link')
         return players
 
-    def get_standings_table(self):
-        #id=leaguestandings
-        standings_table = self.league_soup.find("section", {"id": "leaguestandings"})
+    @staticmethod
+    def get_standings_table(league_page_soup):
+        standings_table = league_page_soup.find("section", {"id": "leaguestandings"})
         return standings_table
 
     def get_standings_info(self):
@@ -52,7 +40,8 @@ class LeaguePageParser:
         for row in standings_rows:
             standings_row_info = self.parse_standings_row(row)
 
-    def parse_standings_row(self, standings_row):
+    @staticmethod
+    def parse_standings_row(standings_row):
         row_info = standings_row.find_all('td')
         href = standings_row[1].find_all('a')[1].get('href')
         team_id = href.split('/')[-1]
@@ -65,7 +54,6 @@ class LeaguePageParser:
         Waiver = row_info[6].contents[0]
         Moves = row_info[7].contents[0]
         return [team_id, rank, name, WLT, PF, PA, Streak, Waiver, Moves]
-
 
     def get_team_names(self):
         team_names = []
