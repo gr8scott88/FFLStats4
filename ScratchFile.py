@@ -1,10 +1,8 @@
+from models import League
 from utility.YahooWebHelper import YahooWebHelper
-from data_storage.LocalDataManager import LocalDataManager
 
+helper = YahooWebHelper()
 
-webHelper = YahooWebHelper()
-dataHandler= LocalDataManager()
+AFC_id = 609682
 
-testSoup = webHelper.get_soup(r'https://football.fantasysports.yahoo.com/f1/609682')
-
-testSoup
+AFC = League.League(AFC_id)

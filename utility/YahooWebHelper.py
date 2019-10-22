@@ -23,17 +23,24 @@ class YahooWebHelper:
         return html_league_and_team + r'/team?&week=' + str(week)
 
     def build_matchup_url_by_week(self, league_id, team_id, week):
+        # https: // football.fantasysports.yahoo.com / f1 / 609682 / matchup?week=1&mid1=1
         html_league_and_team = self.build_url(league_id, team_id)
-        return html_league_and_team + r'/matchup?&week=' + str(week)
+        return html_league_and_team + r'/matchup?&week=' + str(week) + '&mid1=1'
 
     def get_league_soup(self, league_id):
-        return self.get_soup(self.build_url_for_league(league_id))
+        url = self.build_url_for_league(league_id)
+        print(url)
+        return self.get_soup(url)
 
     def get_team_soup_by_week(self, league_id, team_id, week):
-        return self.get_soup(self.build_team_url_by_week(league_id, team_id, week))
+        url = self.build_team_url_by_week(league_id, team_id, week)
+        print(url)
+        return self.get_soup(url)
 
     def get_matchup_soup_by_week(self, league_id, team_id, week):
-        return self.get_soup(self.build_matchup_url_by_week(league_id, team_id, week))
+        url = self.build_matchup_url_by_week(league_id, team_id, week)
+        print(url)
+        return self.get_soup(url)
 
     @staticmethod
     def get_soup(url):

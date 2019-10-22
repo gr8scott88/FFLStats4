@@ -1,15 +1,19 @@
 import pandas as pd
 from models import Team, Webpage, DATACONTRACT
 from web_parsing.LeaguePageParser import LeaguePageParser
+from web_parsing.MatchPageParser import MatchParser
 from data_storage.LocalDataManager import LocalDataManager
 from data_handlers.PandasHandler import PandasDataHandler
 from utility.YahooWebHelper import YahooWebHelper
+
+total_weeks = 16
 
 
 class League:
     def __init__(self, league_id):
         self.league_id = league_id
         self.league_parser = LeaguePageParser()
+        self.match_parser = MatchParser()
         self.web_helper = YahooWebHelper()
         self.local_data_manager = LocalDataManager()
         self.pandas_manager = PandasDataHandler()
@@ -17,20 +21,44 @@ class League:
         self.matchup_info = self.load_matchup_info()
 
     def load_league_info(self) -> pd.DataFrame:
-        league_df = self.local_data_manager.load_league_df()
+        league_df = self.local_data_manager.load_league_df(self.league_id)
         if not league_df:
-            league_soup = self.local_data_manager.load_league_soup(self.league_id)
-            if league_soup is False:
-                league_soup = self.web_helper.get_league_soup(self.league_id)
+            # league_soup = self.local_data_manager.load_league_soup(self.league_id)
+            # if league_soup is False:
+            league_soup = self.web_helper.get_league_soup(self.league_id)
             league_df = self.league_parser.parse_league_info(league_soup)
+            # TODO: Save league info to DF
         print('Loaded League Info:')
         print(league_df)
         return league_df
 
-    def load_matchup_info(self) -> pd.DataFrames:
-        matchup_df = self.local_data_manager.load_matchup_df()
+    def load_matchup_info(self) -> pd.DataFrame:
+        matchup_df = self.local_data_manager.load_matchup_df(self.league_id)
         if not matchup_df:
-            for week in
+            matchup_array = []
+            for index, team_row in self.league_info.iterrows():
+                team_id = team_row['TeamID']
+                team_name = team_row['TeamName']
+                team_matchups = []
+                match_parser = MatchParser()
+                for week in range(total_weeks):
+                    match_page_soup = self.web_helper.get_matchup_soup_by_week(self.league_id, team_id, week+1)
+                    weekly_matchup = match_parser.get_opponent(match_page_soup)
+                    print(f'{team_id} vs {weekly_matchup}')
+                    team_matchups.append(weekly_matchup)
+                matchup_row = [team_id, team_name]
+                matchup_row.extend(team_matchups)
+                matchup_array.append(matchup_row)
+            matchup_df = self.gen_matchup_df(matchup_array)
+        return matchup_df
+
+    @staticmethod
+    def gen_matchup_df(matchup_array) -> pd.DataFrame:
+        week_array = ['Week' + str(x+1) for x in range(total_weeks)]
+        df_columns = ['TeamName', 'TeamId']
+        df_columns.extend(week_array)
+        matchup_df = pd.DataFrame(data=matchup_array, columns=df_columns)
+        return matchup_df
 
     def get_team_ids(self):
         #TODO

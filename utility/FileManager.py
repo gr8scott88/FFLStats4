@@ -15,9 +15,11 @@ def delete_file(file_path):
     if os.path.exists(file_path):
         os.remove(file_path)
 
-def load_league_info(league_id, )
+
+def load_league_info(league_id):
     league_dir = os.path.join(GLOBALS.ROOTDIR, str(league_id))
     file_name = str(league_id) + '_info.csv'
+
 
 def load_df(directory, name):
     df = False
