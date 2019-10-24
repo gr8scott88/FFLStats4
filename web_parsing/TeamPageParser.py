@@ -3,7 +3,7 @@ from utility.YahooWebHelper import YahooWebHelper
 
 class TeamParser:
     def __init__(self):
-        self.web_helper = YahooWebHelper()
+        pass
 
     def parse_team_stats(self, soup):
         team_score = float(self.get_team_score(soup))
@@ -24,6 +24,19 @@ class TeamParser:
         projspans = projhtml[0].find_all('span')
         projscore = projspans[1].contents[0]
         return projscore
+
+    def get_weekly_opponent(self, match_page_soup):
+        matchup_box = match_page_soup.find_all('div', {'id': 'team-card-matchup'})[0]
+        opponent = matchup_box.find_all('a', {'class': 'Grid-u'})[1]
+        opponent_href = opponent.get('href')
+        opponent_id = self.get_id_from_href(opponent_href)
+        return opponent_id
+
+    @staticmethod
+    def get_id_from_href(href):
+        arr = href.split('/')
+        opponent_id = arr[-1]
+        return opponent_id
 
     def get_team_roster(self):
         pass

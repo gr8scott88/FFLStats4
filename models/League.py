@@ -2,6 +2,7 @@ import pandas as pd
 from models import Team, Webpage, DATACONTRACT
 from web_parsing.LeaguePageParser import LeaguePageParser
 from web_parsing.MatchPageParser import MatchParser
+from web_parsing.TeamPageParser import TeamParser
 from data_storage.LocalDataManager import LocalDataManager
 from data_handlers.PandasHandler import PandasDataHandler
 from utility.YahooWebHelper import YahooWebHelper
@@ -14,6 +15,7 @@ class League:
         self.league_id = league_id
         self.league_parser = LeaguePageParser()
         self.match_parser = MatchParser()
+        self.team_parser = TeamParser()
         self.web_helper = YahooWebHelper()
         self.local_data_manager = LocalDataManager()
         self.pandas_manager = PandasDataHandler()
@@ -40,10 +42,9 @@ class League:
                 team_id = team_row['TeamID']
                 team_name = team_row['TeamName']
                 team_matchups = []
-                match_parser = MatchParser()
                 for week in range(total_weeks):
-                    match_page_soup = self.web_helper.get_matchup_soup_by_week(self.league_id, team_id, week+1)
-                    weekly_matchup = match_parser.get_opponent(match_page_soup)
+                    match_page_soup = self.web_helper.get_team_soup_by_week(self.league_id, team_id, week+1)
+                    weekly_matchup = self.team_parser.get_weekly_opponent(match_page_soup)
                     print(f'{team_id} vs {weekly_matchup}')
                     team_matchups.append(weekly_matchup)
                 matchup_row = [team_id, team_name]
@@ -55,9 +56,10 @@ class League:
     @staticmethod
     def gen_matchup_df(matchup_array) -> pd.DataFrame:
         week_array = ['Week' + str(x+1) for x in range(total_weeks)]
-        df_columns = ['TeamName', 'TeamId']
+        df_columns = ['TeamId', 'TeamName']
         df_columns.extend(week_array)
         matchup_df = pd.DataFrame(data=matchup_array, columns=df_columns)
+        matchup_df = matchup_df.astype({'TeamId': 'int32'})
         return matchup_df
 
     def get_team_ids(self):
