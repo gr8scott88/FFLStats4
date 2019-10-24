@@ -8,7 +8,7 @@ from data_handlers.PandasHandler import PandasDataHandler
 from utility.YahooWebHelper import YahooWebHelper
 
 total_weeks = 16
-
+current_week = 7
 
 class League:
     def __init__(self, league_id):
@@ -20,7 +20,8 @@ class League:
         self.local_data_manager = LocalDataManager()
         self.pandas_manager = PandasDataHandler()
         self.league_info = self.load_league_info()
-        self.matchup_info = self.load_matchup_info()
+        # self.matchup_info = self.load_matchup_info()
+        self.scores_df = None
 
     def load_league_info(self) -> pd.DataFrame:
         league_df = self.local_data_manager.load_league_df(self.league_id)
@@ -64,6 +65,49 @@ class League:
 
     def get_team_ids(self):
         #TODO
+        pass
+
+    def load_all_week_results(self, week):
+        for index, fantasy_player in self.league_info.iterrows():
+            team_id = fantasy_player[DATACONTRACT.TEAM_ID]
+            team_name = fantasy_player[DATACONTRACT.TEAM_NAME]
+            print(f'{team_id}/{team_name}')
+            soup = self.web_helper.get_team_soup_by_week(self.league_id, team_id, week)
+            self.team_parser.get_all_player_stats()
+
+    def export_team_scores_df(self):
+        self.scores_df.sort_values('TeamId').to_csv(f'{self.league_id}_Scores_{current_week}weeks.csv')
+
+    def load_all_team_scores_to_date(self):
+        for week in range(current_week):
+            self.load_team_scores_by_week(week+1)
+
+    def load_team_scores_by_week(self, week):
+        score_array = []
+        for index, fantasy_player in self.league_info.iterrows():
+            team_id = fantasy_player[DATACONTRACT.TEAM_ID]
+            team_name = fantasy_player[DATACONTRACT.TEAM_NAME]
+            print(f'{team_id}/{team_name}')
+            soup = self.web_helper.get_team_soup_by_week(self.league_id, team_id, week)
+            score = self.team_parser.get_team_score(soup)
+            # score_array.append([int(team_id), team_name, week, score])
+            score_array.append([int(team_id), team_name, score])
+        if self.scores_df is None:
+            self.gen_scores_df(score_array, week)
+        else:
+            self.append_scores_df(score_array, week)
+        # print(score_array)
+        # return score_array
+
+    def gen_scores_df(self, init_array, week):
+        cols = ['TeamId', 'TeamName', f'Week_{week}_score']
+        self.scores_df = pd.DataFrame(data=init_array, columns=cols)
+
+    def append_scores_df(self, scores_array, week):
+        temp_df = pd.DataFrame(data = scores_array, columns=['TeamId', 'TeamName', 'Scores'])
+        self.scores_df[f'Week_{week}_score'] = temp_df['Scores']
+
+    def gen_player_stats_df(self):
         pass
 
     def load_data_point(self, week, time):
