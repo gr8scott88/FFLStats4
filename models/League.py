@@ -10,6 +10,7 @@ from utility.YahooWebHelper import YahooWebHelper
 total_weeks = 16
 current_week = 7
 
+
 class League:
     def __init__(self, league_id):
         self.league_id = league_id
@@ -82,6 +83,10 @@ class League:
         for week in range(current_week):
             self.load_team_scores_by_week(week+1)
 
+    def load_team_scores_through_week(self, week):
+        for w in range(week):
+            self.load_team_scores_by_week(w+1)
+
     def load_team_scores_by_week(self, week):
         score_array = []
         for index, fantasy_player in self.league_info.iterrows():
@@ -89,21 +94,40 @@ class League:
             team_name = fantasy_player[DATACONTRACT.TEAM_NAME]
             print(f'{team_id}/{team_name}')
             soup = self.web_helper.get_team_soup_by_week(self.league_id, team_id, week)
-            score = self.team_parser.get_team_score(soup)
-            # score_array.append([int(team_id), team_name, week, score])
-            score_array.append([int(team_id), team_name, score])
-        if self.scores_df is None:
-            self.gen_scores_df(score_array, week)
-        else:
-            self.append_scores_df(score_array, week)
+            real_score = self.team_parser.get_team_score(soup)
+            proj_score = self.team_parser.get_team_projected_score(soup)
+            # score_array.append([int(team_id), team_name, score])
+            unique_id = f'{self.league_id}_{team_id}'
+            score_array.append([unique_id, int(team_id), int(week), float(real_score), float(proj_score)])
+        # if self.scores_df is None:
+        #     # self.gen_scores_df_wide(score_array, week)
+        #     self.gen_scores_df()
+        #
+        # else:
+        #     self.append_scores_df_wide(score_array, week)
+        self.append_scores_df(score_array)
         # print(score_array)
         # return score_array
 
-    def gen_scores_df(self, init_array, week):
+    def gen_scores_df_wide(self, init_array, week):
         cols = ['TeamId', 'TeamName', f'Week_{week}_score']
         self.scores_df = pd.DataFrame(data=init_array, columns=cols)
 
-    def append_scores_df(self, scores_array, week):
+    def gen_scores_df(self):
+        cols = ['TeamId', 'TeamName', 'Week', 'Score']
+        self.scores_df = pd.DataFrame(columns=cols)
+
+    def append_scores_df(self, arr):
+        # cols = ['TeamId', 'TeamName', 'Week', 'Score']
+        # TEAMSCORECOLS = ['UniqueID', 'TeamId', 'Week', 'RealScore', 'ProjScore']
+        temp_df = pd.DataFrame(data=arr, columns=DATACONTRACT.TEAMSCORECOLS)
+        # print(temp_df)
+        if self.scores_df is None:
+            self.scores_df = temp_df
+        else:
+            self.scores_df = self.scores_df.append(temp_df)
+
+    def append_scores_df_wide(self, scores_array, week):
         temp_df = pd.DataFrame(data = scores_array, columns=['TeamId', 'TeamName', 'Scores'])
         self.scores_df[f'Week_{week}_score'] = temp_df['Scores']
 
