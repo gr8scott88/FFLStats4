@@ -7,8 +7,10 @@ from data_storage.LocalDataManager import LocalDataManager
 from data_handlers.PandasHandler import PandasDataHandler
 from utility.YahooWebHelper import YahooWebHelper
 
+
 total_weeks = 16
 current_week = 7
+
 
 class League:
     def __init__(self, league_id):
@@ -20,24 +22,29 @@ class League:
         self.local_data_manager = LocalDataManager()
         self.pandas_manager = PandasDataHandler()
         self.league_info = self.load_league_info()
-        # self.matchup_info = self.load_matchup_info()
+        self.matchup_info = self.load_matchup_info()
         self.scores_df = None
 
     def load_league_info(self) -> pd.DataFrame:
-        league_df = self.local_data_manager.load_league_df(self.league_id)
-        if not league_df:
+        # league_df = self.local_data_manager.load_local_league_info(self.league_id)
+        league_df = self.local_data_manager.load_from_parquet(self.league_id, "LeagueInfo")
+        if league_df is None:
             # league_soup = self.local_data_manager.load_league_soup(self.league_id)
             # if league_soup is False:
             league_soup = self.web_helper.get_league_soup(self.league_id)
             league_df = self.league_parser.parse_league_info(league_soup)
-            # TODO: Save league info to DF
-        print('Loaded League Info:')
-        print(league_df)
+            print('Loaded League Info from WEB')
+            # self.local_data_manager.save_local_league_info(self.league_id, league_df, False)
+            self.local_data_manager.save_to_parquet(self.league_id, league_df, "LeagueInfo", False)
+        else:
+            print('Loaded League Info from PARQUET file')
+        # print(league_df)
         return league_df
 
     def load_matchup_info(self) -> pd.DataFrame:
-        matchup_df = self.local_data_manager.load_matchup_df(self.league_id)
-        if not matchup_df:
+        # matchup_df = self.local_data_manager.load_local_weekly_matcups(self.league_id)
+        matchup_df = self.local_data_manager.load_from_parquet(self.league_id, "MatchupInfo")
+        if matchup_df is None:
             matchup_array = []
             for index, team_row in self.league_info.iterrows():
                 team_id = team_row['TeamID']
@@ -52,6 +59,11 @@ class League:
                 matchup_row.extend(team_matchups)
                 matchup_array.append(matchup_row)
             matchup_df = self.gen_matchup_df(matchup_array)
+            # self.local_data_manager.save_local_weekly_matchups(self.league_id, matchup_df, False)
+            self.local_data_manager.save_to_parquet(self.league_id, matchup_df, "MatchupInfo", False)
+            print('Loaded Matchup Info from WEB')
+        else:
+            print('Loaded Matchup Info from PARQUET file')
         return matchup_df
 
     @staticmethod
@@ -63,9 +75,11 @@ class League:
         matchup_df = matchup_df.astype({'TeamId': 'int32'})
         return matchup_df
 
-    def get_team_ids(self):
-        #TODO
-        pass
+    def get_team_count(self):
+        return self.league_info.shape[0]
+
+    def load_saved_weekly_results(self):
+        loaded_df = self.local_data_manager.load_local_team_weekly_scores(self.league_id)
 
     def load_all_week_results(self, week):
         for index, fantasy_player in self.league_info.iterrows():
