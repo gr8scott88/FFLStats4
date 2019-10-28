@@ -12,8 +12,6 @@ NFC_id = 713428
 
 AFC = League.League(AFC_id)
 NFC = League.League(NFC_id)
-# NFC.matchup_info.astype({'TeamId':'int32'}).sort_values('TeamId').reset_index().to_csv('nfc_matchup.csv')
-# AFC.matchup_info.astype({'TeamId':'int32'}).sort_values('TeamId').reset_index().to_csv('afc_matchup.csv')
 
 
 current_week = 2
