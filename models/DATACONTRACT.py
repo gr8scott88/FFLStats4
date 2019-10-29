@@ -10,3 +10,13 @@ PLAYERSCORECOLS = ['UniqueID', 'Week', 'Name',
 LEAGUEINFOCOLS = ['UniqueID', 'LeagueID', 'TeamID', 'TeamName']
 LEAGUETRACKERCOLS = ['UniqueID', 'LeagueId', 'LeagueName', 'Order', 'TeamId', 'TeamName']
 
+DATAROOT = r'data_archive'
+LEAGUEFILENAME = 'LeagueInfo'
+MATCHUPFILENAME = 'MatchupInfo'
+SCOREFILENAME  = 'ScoreInfo'
+
+LEAGUEHTML= 'LeagueHTML'
+TEAMHTML = 'TeamHTML'
+MATCHUPHTML = 'MatchupHTML'
+
+EXPORTDIR = 'export'

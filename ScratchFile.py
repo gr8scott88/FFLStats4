@@ -13,6 +13,8 @@ NFC_id = 713428
 AFC = League.League(AFC_id)
 NFC = League.League(NFC_id)
 
+AFC.load_team_scores_through_week(7)
+NFC.load_team_scores_through_week(7)
 
 current_week = 2
 for week in range(current_week):
