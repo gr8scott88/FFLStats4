@@ -13,8 +13,9 @@ current_week = 7
 
 
 class League:
-    def __init__(self, league_id):
+    def __init__(self, league_id, name_):
         self.league_id = league_id
+        self.name = name_
         self.league_parser = LeaguePageParser()
         self.match_parser = MatchParser()
         self.team_parser = TeamParser()

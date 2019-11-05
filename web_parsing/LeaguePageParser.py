@@ -16,7 +16,7 @@ class LeaguePageParser:
             league_id = info[0]
             team_id = info[1]
             unique_id = str(league_id + '_' + str(team_id))
-            league_info.append([unique_id, league_id, team_id, team_name])
+            league_info.append([unique_id, league_id, int(team_id), team_name])
         league_frame = pd.DataFrame(league_info, columns=[DATACONTRACT.LEAGUEINFOCOLS[0],
                                                           DATACONTRACT.LEAGUEINFOCOLS[1],
                                                           DATACONTRACT.LEAGUEINFOCOLS[2],
