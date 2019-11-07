@@ -17,11 +17,21 @@ load_thru_week = 8
 AFC = League.League(AFC_id, 'AFC')
 NFC = League.League(NFC_id, 'NFC')
 
-AFC_vis = LeagueVisualizer(AFC)
-NFC_vis = LeagueVisualizer(NFC)
-
 AFC.load_team_scores_through_week(load_thru_week)
 NFC.load_team_scores_through_week(load_thru_week)
 
-AFC_vis.plot_cum_real_vs_proj_by_week()
-NFC_vis.plot_cum_real_vs_proj_by_week()
+AFC_vis = LeagueVisualizer(AFC)
+NFC_vis = LeagueVisualizer(NFC)
+
+AFC_vis.plot_cum_real_vs_proj_by_week(save=True)
+NFC_vis.plot_cum_real_vs_proj_by_week(save=True)
+
+AFC_vis.plot_cum_real_score_by_week(save=True)
+NFC_vis.plot_cum_real_score_by_week(save=True)
+
+AFC_vis.plot_real_score_by_week(save=True)
+NFC_vis.plot_real_score_by_week(save=True)
+
+AFC_vis.plot_real_vs_proj_by_week(save=True)
+NFC_vis.plot_real_vs_proj_by_week(save=True)
+
