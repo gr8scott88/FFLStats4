@@ -114,6 +114,12 @@ class League:
         else:
             self.score_info = self.score_info.append(temp_df)
 
+    def load_all_player_data_through_week(self, week):
+        pass
+
+    def load_player_data_by_week(self, week):
+        pass
+
     def gen_player_stats_df(self):
         pass
 

@@ -1,22 +1,29 @@
 LEAGUE_ID = 'LeagueID'
+UNIQUE_ID = 'UniqueID'
 LEAGUE_NAME = 'LeagueName'
 TEAM_ID = 'TeamID'
 TEAM_NAME = 'TeamName'
+REAL_SCORE = 'RealScore'
+PROJ_SCORE = 'ProjScore'
+WEEK = 'Week'
 
-TEAMINFOCOLS = ['UniqueID', 'LeagueID', 'LeagueName', 'TeamID', 'TeamName']
-TEAMSCORECOLS = ['UniqueID', 'TeamID', 'Week', 'RealScore', 'ProjScore']
-PLAYERSCORECOLS = ['UniqueID', 'Week', 'Name',
-                   'PlayerPos', 'ActivePos', 'RealScore', 'ProjScore', 'PctPlayed']
-LEAGUEINFOCOLS = ['UniqueID', 'LeagueID', 'TeamID', 'TeamName']
-LEAGUETRACKERCOLS = ['UniqueID', 'LeagueId', 'LeagueName', 'Order', 'TeamID', 'TeamName']
+TEAMINFOCOLS = [UNIQUE_ID, LEAGUE_ID, LEAGUE_NAME, TEAM_ID, TEAM_NAME]
+TEAMSCORECOLS = [UNIQUE_ID, TEAM_ID, WEEK, REAL_SCORE, PROJ_SCORE]
+PLAYERSCORECOLS = [UNIQUE_ID, WEEK, 'Name',
+                   'PlayerPos', 'ActivePos', REAL_SCORE, PROJ_SCORE, 'PctPlayed']
+LEAGUEINFOCOLS = [UNIQUE_ID, LEAGUE_ID, TEAM_ID, TEAM_NAME]
+LEAGUETRACKERCOLS = [UNIQUE_ID, LEAGUE_ID, LEAGUE_NAME, 'Order', TEAM_ID, TEAM_NAME]
+RANKINGTRACKERCOLS = [UNIQUE_ID, LEAGUE_ID, TEAM_ID, TEAM_NAME, WEEK, 'Ranking']
 
 DATAROOT = r'data_archive'
 LEAGUEFILENAME = 'LeagueInfo'
 MATCHUPFILENAME = 'MatchupInfo'
-SCOREFILENAME  = 'ScoreInfo'
+SCOREFILENAME = 'ScoreInfo'
 
 LEAGUEHTML= 'LeagueHTML'
 TEAMHTML = 'TeamHTML'
 MATCHUPHTML = 'MatchupHTML'
 
 EXPORTDIR = 'export'
+PLAYERREPORTS = 'player_reports'
+LEAGUEREPORTS = 'league_reports'
