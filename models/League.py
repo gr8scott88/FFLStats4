@@ -3,6 +3,7 @@ from models import Team, DATACONTRACT
 from web_parsing.LeaguePageParser import LeaguePageParser
 from web_parsing.MatchPageParser import MatchParser
 from web_parsing.TeamPageParser import TeamParser
+from web_parsing.PlayerParser import PlayerParser
 import data_storage.LocalDataManager as dm
 from data_handlers.PandasHandler import PandasDataHandler
 from utility.YahooWebHelper import YahooWebHelper
@@ -19,11 +20,13 @@ class League:
         self.league_parser = LeaguePageParser()
         self.match_parser = MatchParser()
         self.team_parser = TeamParser()
+        self.player_parser = PlayerParser()
         self.web_helper = YahooWebHelper()
         self.pandas_manager = PandasDataHandler()
         self.league_info = self.load_league_info()
         self.matchup_info = self.load_matchup_info()
         self.score_info = self.load_score_info()
+        self.player_info = self.load_player_info()
 
     def load_league_info(self) -> pd.DataFrame:
         league_df = dm.load_from_parquet(self.league_id, DATACONTRACT.LEAGUEFILENAME)
@@ -74,6 +77,9 @@ class League:
     def load_score_info(self):
         return dm.load_from_parquet(self.league_id, DATACONTRACT.SCOREFILENAME)
 
+    def load_player_info(self):
+        return dm.load_from_parquet(self.league_id, DATACONTRACT.PLAYERFILENAME)
+
     def load_all_team_scores_to_date(self):
         for week in range(current_week):
             self.load_team_scores_by_week(week+1, save_data=True)
@@ -87,6 +93,12 @@ class League:
             return False
         else:
             return week in self.score_info['Week'].to_list()
+
+    def is_week_player_data_loaded(self, week):
+        if self.player_info is None:
+            return False
+        else:
+            return week in self.player_info['Week'].to_list()
 
     def load_team_scores_by_week(self, week, save_data=False):
         if not self.is_week_loaded(week):
@@ -115,10 +127,24 @@ class League:
             self.score_info = self.score_info.append(temp_df)
 
     def load_all_player_data_through_week(self, week):
-        pass
+        for w in range(week):
+            self.load_player_data_by_week(w + 1, save_data=True)
 
-    def load_player_data_by_week(self, week):
-        pass
+    def load_player_data_by_week(self, week, save_data=False):
+        if not self.is_week_player_data_loaded(week):
+            player_array = []
+            for index, fantasy_player in self.league_info.iterrows():
+                team_id = fantasy_player[DATACONTRACT.TEAM_ID]
+                team_name = fantasy_player[DATACONTRACT.TEAM_NAME]
+                print(f'{team_id}/{team_name}')
+                soup = self.web_helper.get_team_soup_by_week(self.league_id, team_id, week)
+                self.player_parser.p
+                unique_id = f'{self.league_id}_{team_id}'
+                # TEAMSCORECOLS = ['UniqueID', 'TeamId', 'Week', 'RealScore', 'ProjScore']
+                score_array.append([unique_id, int(team_id), int(week), float(real_score), float(proj_score)])
+            self.append_scores_df(score_array)
+            if save_data:
+                dm.save_to_parquet(self.league_id, self.score_info, DATACONTRACT.SCOREFILENAME, True)
 
     def gen_player_stats_df(self):
         pass

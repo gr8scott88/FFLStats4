@@ -19,6 +19,7 @@ DATAROOT = r'data_archive'
 LEAGUEFILENAME = 'LeagueInfo'
 MATCHUPFILENAME = 'MatchupInfo'
 SCOREFILENAME = 'ScoreInfo'
+PLAYERFILENAME = 'PlayerInfo'
 
 LEAGUEHTML= 'LeagueHTML'
 TEAMHTML = 'TeamHTML'

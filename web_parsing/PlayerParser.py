@@ -3,6 +3,25 @@ class PlayerParser:
     def __init__(self):
         pass
 
+    def get_all_player_info(self, soup):
+        stat_table = soup.find_all('section', {'class': 'stat-target'})[0]
+        sub_tables = stat_table.findChildren('div', recursive=False)
+        offense_and_bench = sub_tables[0]
+        kickers = sub_tables[1]
+        defense = sub_tables[2]
+
+    def get_all_offensive_players(self, offense_soup):
+        pass
+
+    def get_all_kicker_info(self, kicker_soup):
+        pass
+
+    def get_all_defense_info(self, defense_soup):
+        pass
+
+    def get_all_bench_info(self, bench_soup):
+        pass
+
     def parse_offensive_player(self, soup):
         data_indices = [0, 1, 5, 6, 7]
         if self.does_contain_forecast(soup):
