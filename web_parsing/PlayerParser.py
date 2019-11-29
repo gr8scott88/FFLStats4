@@ -1,4 +1,8 @@
 
+# PLAYERSCORECOLS = [UNIQUE_ID, WEEK, 'Name',
+#                    'PlayerPos', 'ActivePos', REAL_SCORE, PROJ_SCORE, 'PctPlayed']
+
+
 class PlayerParser:
     def __init__(self):
         pass
@@ -6,21 +10,56 @@ class PlayerParser:
     def get_all_player_info(self, soup):
         stat_table = soup.find_all('section', {'class': 'stat-target'})[0]
         sub_tables = stat_table.findChildren('div', recursive=False)
-        offense_and_bench = sub_tables[0]
-        kickers = sub_tables[1]
-        defense = sub_tables[2]
+        offense_and_bench_table = sub_tables[0]
+        kicker_table = sub_tables[1]
+        defense_table = sub_tables[2]
+        offense_and_bench_players = self.get_all_offensive_and_bench_players(offense_and_bench_table)
+        defense_players = self.get_all_defense_info(defense_table)
+        kicker_players = self.get_all_kicker_info(kicker_table)
+        total_player_data = self.combine_all_data([offense_and_bench_players, defense_players, kicker_players])
+        return total_player_data
 
-    def get_all_offensive_players(self, offense_soup):
-        pass
+    def get_table_rows(self, table_soup):
+        return table_soup.find_all('tr')
 
-    def get_all_kicker_info(self, kicker_soup):
-        pass
+    def get_table_colunms(self, row_soup):
+        return row_soup.find_all('td')
 
-    def get_all_defense_info(self, defense_soup):
-        pass
+    def is_player_row(self, row_soup):
+        return 'href' in str(row_soup)
 
-    def get_all_bench_info(self, bench_soup):
-        pass
+    def combine_all_data(self, arrays):
+        out_array =[]
+        for arr in arrays:
+            out_array = out_array.extend(arr)
+        return out_array
+
+    def get_all_offensive_and_bench_players(self, offense_table):
+        player_rows = self.get_table_rows(offense_table)
+        all_data = []
+        for row in player_rows:
+            if self.is_player_row(row):
+                new_data = self.parse_offensive_player(row)
+                all_data.extend(new_data)
+        return all_data
+
+    def get_all_kicker_info(self, kicker_table):
+        player_rows = self.get_table_rows(kicker_table)
+        all_data = []
+        for row in player_rows:
+            if self.is_player_row(row):
+                new_data = self.parse_kicker(row)
+                all_data.extend(new_data)
+        return all_data
+
+    def get_all_defense_info(self, defense_table):
+        player_rows = self.get_table_rows(defense_table)
+        all_data = []
+        for row in player_rows:
+            if self.is_player_row(row):
+                new_data = self.parse_defense(row)
+                all_data.extend(new_data)
+        return all_data
 
     def parse_offensive_player(self, soup):
         data_indices = [0, 1, 5, 6, 7]

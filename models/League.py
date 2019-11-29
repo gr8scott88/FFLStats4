@@ -138,16 +138,24 @@ class League:
                 team_name = fantasy_player[DATACONTRACT.TEAM_NAME]
                 print(f'{team_id}/{team_name}')
                 soup = self.web_helper.get_team_soup_by_week(self.league_id, team_id, week)
-                self.player_parser.p
+                player_array = self.player_parser.get_all_player_info()
                 unique_id = f'{self.league_id}_{team_id}'
-                # TEAMSCORECOLS = ['UniqueID', 'TeamId', 'Week', 'RealScore', 'ProjScore']
-                score_array.append([unique_id, int(team_id), int(week), float(real_score), float(proj_score)])
-            self.append_scores_df(score_array)
+                # PLAYERSCORECOLS = [UNIQUE_ID, WEEK, 'Name',
+                #                    'PlayerPos', 'ActivePos', REAL_SCORE, PROJ_SCORE, 'PctPlayed']
+                player_array.append([unique_id, int(team_id), int(week), float(real_score), float(proj_score)])
+            self.append_player_stats_df(player_array)
             if save_data:
-                dm.save_to_parquet(self.league_id, self.score_info, DATACONTRACT.SCOREFILENAME, True)
+                dm.save_to_parquet(self.league_id, self.player_info, DATACONTRACT.SCOREFILENAME, True)
 
-    def gen_player_stats_df(self):
-        pass
+    def append_player_stats_df(self, arr):
+        # PLAYERSCORECOLS = [UNIQUE_ID, WEEK, 'Name',
+        #                    'PlayerPos', 'ActivePos', REAL_SCORE, PROJ_SCORE, 'PctPlayed']
+        temp_df = pd.DataFrame(data=arr, columns=DATACONTRACT.TEAMSCORECOLS)
+        # print(temp_df)
+        if self.player_info is None:
+            self.player_info = temp_df
+        else:
+            self.player_info = self.player_info.append(temp_df)
 
     def export_league_data_to_csv(self):
         leaguefilename = str(self.league_id) + 'LeagueData'
@@ -167,33 +175,3 @@ class League:
         print(self.league_info)
         print(self.matchup_info)
         print(self.score_info)
-
-    ##### BELOW IS SCRATCH #####
-
-    def load_all_week_results(self, week):
-        for index, fantasy_player in self.league_info.iterrows():
-            team_id = fantasy_player[DATACONTRACT.TEAM_ID]
-            team_name = fantasy_player[DATACONTRACT.TEAM_NAME]
-            print(f'{team_id}/{team_name}')
-            soup = self.web_helper.get_team_soup_by_week(self.league_id, team_id, week)
-            self.team_parser.get_all_player_stats()
-
-    def export_team_scores_df(self):
-        self.score_info.sort_values('TeamId').to_csv(f'{self.league_id}_Scores_{current_week}weeks.csv')
-
-    def load_data_point(self, week, time):
-        for index, fantasy_player in self.league_info.iterrows():
-            print(str(fantasy_player[DATACONTRACT.TEAM_ID]) + r'/' + fantasy_player[str(DATACONTRACT.TEAM_NAME)])
-            team_id = fantasy_player[DATACONTRACT.TEAM_ID]
-            team = Team.Team(self.league_id, team_id)
-            team.load_soup_for_week(week, 0)
-            team_data = team.parse_team_info()
-            unique_id = str(self.league_id) + '_' + str(team_id)
-            self.pandas_manager.add_team_info(team_data, [unique_id, week, time])
-            team_player_data = team.parse_all_player_info()
-            self.pandas_manager.add_player_info(team_player_data, [unique_id, week, time])
-
-    def load_all_data_points(self, current_week):
-        for week in range(current_week):
-            print('Parsing week ' + str(current_week+1))
-            self.load_data_point(week+1, 0)
