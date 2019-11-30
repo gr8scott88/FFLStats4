@@ -7,7 +7,7 @@ from web_parsing.PlayerParser import PlayerParser
 import data_storage.LocalDataManager as dm
 from data_handlers.PandasHandler import PandasDataHandler
 from utility.YahooWebHelper import YahooWebHelper
-
+from loguru import logger
 
 total_weeks = 16
 current_week = 7
@@ -26,6 +26,9 @@ class League:
         self.league_info = self.load_league_info()
         self.matchup_info = self.load_matchup_info()
         self.score_info = self.load_score_info()
+        self.player_info = self.load_player_info()
+
+    def reload_player_info(self):
         self.player_info = self.load_player_info()
 
     def load_league_info(self) -> pd.DataFrame:
@@ -95,10 +98,14 @@ class League:
             return week in self.score_info['Week'].to_list()
 
     def is_week_player_data_loaded(self, week):
+        # logger.debug(f'Loading player scores for week {week}')
         if self.player_info is None:
+            # logger.debug('Player info doesn\'t exist')
             return False
         else:
-            return week in self.player_info['Week'].to_list()
+            res = week in self.player_info['Week'].to_list()
+            # logger.debug(f'Looking in week {week} result is {res}')
+            return res
 
     def load_team_scores_by_week(self, week, save_data=False):
         if not self.is_week_loaded(week):
@@ -132,30 +139,38 @@ class League:
 
     def load_player_data_by_week(self, week, save_data=False):
         if not self.is_week_player_data_loaded(week):
-            player_array = []
             for index, fantasy_player in self.league_info.iterrows():
                 team_id = fantasy_player[DATACONTRACT.TEAM_ID]
                 team_name = fantasy_player[DATACONTRACT.TEAM_NAME]
                 print(f'{team_id}/{team_name}')
                 soup = self.web_helper.get_team_soup_by_week(self.league_id, team_id, week)
-                player_array = self.player_parser.get_all_player_info()
+                player_array = self.player_parser.get_all_info(soup)
                 unique_id = f'{self.league_id}_{team_id}'
                 # PLAYERSCORECOLS = [UNIQUE_ID, WEEK, 'Name',
                 #                    'PlayerPos', 'ActivePos', REAL_SCORE, PROJ_SCORE, 'PctPlayed']
-                player_array.append([unique_id, int(team_id), int(week), float(real_score), float(proj_score)])
-            self.append_player_stats_df(player_array)
-            if save_data:
-                dm.save_to_parquet(self.league_id, self.player_info, DATACONTRACT.SCOREFILENAME, True)
 
-    def append_player_stats_df(self, arr):
+                player_df = pd.DataFrame(columns=DATACONTRACT.PLAYERPARSECOLS, data=player_array)
+                player_df[DATACONTRACT.UNIQUE_ID] = unique_id
+                player_df[DATACONTRACT.WEEK] = week
+                # player_array.append([unique_id, int(team_id), int(week), float(real_score), float(proj_score)])
+                # matchup_df = matchup_df.astype({'TeamId': 'int32'})
+                player_df = player_df.astype({f'{DATACONTRACT.REAL_SCORE}': 'float'})
+                player_df = player_df.astype({f'{DATACONTRACT.PROJ_SCORE}': 'float'})
+                player_df = player_df.astype({f'{DATACONTRACT.PCTSTART}': 'float'})
+                player_df = player_df.astype({f'{DATACONTRACT.WEEK}': 'int'})
+                self.append_player_stats_df(player_df)
+            if save_data:
+                dm.save_to_parquet(self.league_id, self.player_info, DATACONTRACT.PLAYERFILENAME, True)
+
+    def append_player_stats_df(self, df):
         # PLAYERSCORECOLS = [UNIQUE_ID, WEEK, 'Name',
         #                    'PlayerPos', 'ActivePos', REAL_SCORE, PROJ_SCORE, 'PctPlayed']
-        temp_df = pd.DataFrame(data=arr, columns=DATACONTRACT.TEAMSCORECOLS)
+        # temp_df = pd.DataFrame(data=arr, columns=DATACONTRACT.TEAMSCORECOLS)
         # print(temp_df)
         if self.player_info is None:
-            self.player_info = temp_df
+            self.player_info = df
         else:
-            self.player_info = self.player_info.append(temp_df)
+            self.player_info = self.player_info.append(df)
 
     def export_league_data_to_csv(self):
         leaguefilename = str(self.league_id) + 'LeagueData'
