@@ -27,6 +27,8 @@ NFC.load_team_scores_through_week(load_thru_week)
 AFC_vis = LeagueVisualizer(AFC)
 NFC_vis = LeagueVisualizer(NFC)
 
+AFC_vis.plot_player_breakdown()
+
 AFC_vis.plot_cum_real_vs_proj_by_week(save=True)
 NFC_vis.plot_cum_real_vs_proj_by_week(save=True)
 
@@ -38,3 +40,4 @@ NFC_vis.plot_real_score_by_week(save=True)
 
 AFC_vis.plot_real_vs_proj_by_week(save=True)
 NFC_vis.plot_real_vs_proj_by_week(save=True)
+

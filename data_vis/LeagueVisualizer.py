@@ -72,8 +72,12 @@ class LeagueVisualizer:
             plt.show()
 
     def plot_player_breakdown(self, save=False):
-        #TODO
-        pass
+        teams = self.league.player_info.groupby('UniqueID')
+        for name, team in teams:
+            filtered = team.loc[~team['ActivePos'].isin(['BN'])]
+            grouped = filtered.groupby(['UniqueID', 'Week', 'ActivePos'])['RealScore'].sum().unstack('ActivePos')
+            grouped.plot(kind='bar', stacked=True)
+            plt.title(name)
 
 
     @staticmethod
