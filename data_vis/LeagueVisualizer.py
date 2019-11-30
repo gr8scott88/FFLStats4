@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
+import os
 
 
 class LeagueVisualizer:
@@ -70,14 +71,14 @@ class LeagueVisualizer:
         else:
             plt.show()
 
+    def plot_player_breakdown(self, save=False):
+        #TODO
+        pass
+
+
     @staticmethod
     def save_plot(name):
-        # mng = plt.get_current_fig_manager()
-        # mng.frame.Maximize(True)
-        # mng = plt.get_current_fig_manager()
-        # mng.window.state('zoomed')
-        # plt.show()
-        # time.sleep(2)
-        plt.savefig(name)
+        fpath = os.path.join('plots', name)
+        plt.savefig(fpath)
         plt.close()
 

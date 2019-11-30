@@ -106,9 +106,5 @@ def get_soup(fpath):
         #TODO
         pass
 
-
 def export_to_csv(data:pd.DataFrame, filename):
     data.to_csv(gen_full_file_path([DATACONTRACT.EXPORTDIR], filename))
-
-
-
