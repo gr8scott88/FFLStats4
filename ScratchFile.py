@@ -41,3 +41,7 @@ NFC_vis.plot_real_score_by_week(save=True)
 AFC_vis.plot_real_vs_proj_by_week(save=True)
 NFC_vis.plot_real_vs_proj_by_week(save=True)
 
+
+# Export Scores (unfriendly format)
+AFC.score_info.sort_values(['Week', 'TeamID']).to_csv('AFC_Scores.csv')
+NFC.score_info.sort_values(['Week', 'TeamID']).to_csv('NFC_Scores.csv')
