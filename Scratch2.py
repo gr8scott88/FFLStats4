@@ -16,3 +16,7 @@ emptyplayer = pp.get_table_colunms(rows[2])
 
 
 
+teams = AFC.player_info.groupby('UniqueID')
+team1 = group = next(iter(teams))
+# AFC_vis.plot_player_breakdown_by_team_var(team1, save=True)
+

@@ -17,17 +17,20 @@ load_thru_week = 12
 
 AFC = League.League(AFC_id, 'AFC')
 NFC = League.League(NFC_id, 'NFC')
-
-AFC.load_all_player_data_through_week(load_thru_week)
-NFC.load_all_player_data_through_week(load_thru_week)
-
-AFC.load_team_scores_through_week(load_thru_week)
-NFC.load_team_scores_through_week(load_thru_week)
-
 AFC_vis = LeagueVisualizer(AFC)
 NFC_vis = LeagueVisualizer(NFC)
 
-AFC_vis.plot_player_breakdown()
+AFC.load_all_player_data_through_week(load_thru_week)
+NFC.load_all_player_data_through_week(load_thru_week)
+AFC.load_team_scores_through_week(load_thru_week)
+NFC.load_team_scores_through_week(load_thru_week)
+
+AFC_vis.plot_player_breakdown_for_season(save=True)
+NFC_vis.plot_player_breakdown_for_season(save=True)
+
+AFC_vis.plot_player_breakdown_for_all_teams(save=True)
+NFC_vis.plot_player_breakdown_for_all_teams(save=True)
+
 
 AFC_vis.plot_cum_real_vs_proj_by_week(save=True)
 NFC_vis.plot_cum_real_vs_proj_by_week(save=True)
@@ -40,6 +43,9 @@ NFC_vis.plot_real_score_by_week(save=True)
 
 AFC_vis.plot_real_vs_proj_by_week(save=True)
 NFC_vis.plot_real_vs_proj_by_week(save=True)
+
+AFC_vis.plot_player_breakdown_for_all_teams(save=True)
+
 
 
 # Export Scores (unfriendly format)
