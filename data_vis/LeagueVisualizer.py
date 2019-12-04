@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import time
 import os
+from matplotlib.cm import get_cmap
+
+
+name = "Accent"
+cmap = get_cmap(name)  # type: matplotlib.colors.ListedColormap
+colors = cmap.colors  # type: list
 
 
 class LeagueVisualizer:
@@ -29,12 +35,14 @@ class LeagueVisualizer:
         merged = pd.merge(self.league.score_info, self.league.league_info, on='TeamID', how='left')
         grouped = merged.groupby('TeamName')
         fig, ax = plt.subplots(figsize=(15, 7))
+        ax.set_prop_cycle(color=colors)
         for name, group in grouped:
             group['CumScore'] = group['RealScore'].cumsum()
             group.plot(x='Week', y='CumScore', ax=ax, label=name)
         plot_title = f'Cumulative Total Score by Week for {self.league.name}'
         plt.title(plot_title)
         plt.legend(loc='upper left')
+
         if save:
             self.save_plot(plot_title)
         else:
@@ -113,7 +121,8 @@ class LeagueVisualizer:
                 plt.show()
 
     def plot_player_breakdown_for_season(self, save=False):
-        f = plt.figure(figsize=(20, 10))
+        f, ax = plt.subplots(figsize=(20, 10))
+        ax.set_prop_cycle(color=colors)
         df = pd.merge(self.league.player_info,self.league.league_info, on='UniqueID')
         filtered = df.loc[~df['ActivePos'].isin(['BN', 'IR'])]
         grouped = filtered.groupby(['TeamName', 'ActivePos'])['RealScore'].sum().unstack('ActivePos')
