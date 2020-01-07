@@ -1,22 +1,19 @@
-from web_parsing.PlayerParser import PlayerParser
+from web_parsing.DraftParser import DraftParser
 from utility.YahooWebHelper import YahooWebHelper
+from models import DATACONTRACT
 helper = YahooWebHelper()
 
-pp = PlayerParser()
-url = r'https://football.fantasysports.yahoo.com/f1/713428/7/team?week=11'
-# url = r'https://football.fantasysports.yahoo.com/f1/609682/9/team?&week=4'
-soup = helper.get_soup(url)
-# res = pp.get_all_player_info(soup)
-res = pp.get_all_info(soup)
 
+league_id = 609682
+team_id = 1
+unique_id = f'{league_id}_{team_id}'
+s = helper.get_draft_soup(league_id, team_id)
+dp = DraftParser()
 
-ot = pp.get_stat_table(soup, 0)
-rows = pp.get_table_rows(ot)
-emptyplayer = pp.get_table_colunms(rows[2])
+# DRAFTTRACKERCOLS = [UNIQUE_ID, LEAGUE_ID, TEAM_ID, DRAFTORDER, CLASSORDER, PLAYERNAME, PLAYERPOS]
+info_dict = {DATACONTRACT.UNIQUE_ID: unique_id,
+             DATACONTRACT.LEAGUE_ID: league_id,
+             DATACONTRACT.TEAM_ID: team_id}
 
-
-
-teams = AFC.player_info.groupby('UniqueID')
-team1 = group = next(iter(teams))
-# AFC_vis.plot_player_breakdown_by_team_var(team1, save=True)
+test = dp.parse_draft_info(s, info_dict)
 

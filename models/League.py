@@ -4,6 +4,7 @@ from web_parsing.LeaguePageParser import LeaguePageParser
 from web_parsing.MatchPageParser import MatchParser
 from web_parsing.TeamPageParser import TeamParser
 from web_parsing.PlayerParser import PlayerParser
+from web_parsing.DraftParser import DraftParser
 import data_storage.LocalDataManager as dm
 from data_handlers.PandasHandler import PandasDataHandler
 from utility.YahooWebHelper import YahooWebHelper
@@ -19,14 +20,17 @@ class League:
         self.name = name_
         self.league_parser = LeaguePageParser()
         self.match_parser = MatchParser()
+        self.draft_parser = DraftParser()
         self.team_parser = TeamParser()
         self.player_parser = PlayerParser()
         self.web_helper = YahooWebHelper()
         self.pandas_manager = PandasDataHandler()
         self.league_info = self.load_league_info()
+        self.draft_info = self.load_draft_info()
         self.matchup_info = self.load_matchup_info()
         self.score_info = self.load_score_info()
         self.player_info = self.load_player_info()
+        # self.rank_info = self.calculate_rank()
 
     def reload_player_info(self):
         self.player_info = self.load_player_info()
@@ -41,6 +45,30 @@ class League:
         else:
             print('Loaded League Info from PARQUET file')
         return league_df
+
+    def load_draft_info(self) -> pd.DataFrame:
+        draft_df = dm.load_from_parquet(self.league_id, DATACONTRACT.DRAFTFILENAME)
+        if draft_df is None:
+            for index, team_row in self.league_info.iterrows():
+                team_id = team_row[DATACONTRACT.TEAM_ID]
+                team_name = team_row[DATACONTRACT.TEAM_NAME]
+                unique_id = f'{self.league_id}_{team_id}'
+                # [UNIQUE_ID, LEAGUE_ID, TEAM_ID, TEAM_NAME,
+                info_dict = {DATACONTRACT.UNIQUE_ID: unique_id,
+                             DATACONTRACT.LEAGUE_ID: self.league_id,
+                             DATACONTRACT.TEAM_ID: team_id,
+                             DATACONTRACT.TEAM_NAME: team_name}
+                draft_soup = self.web_helper.get_draft_soup(self.league_id, team_id)
+                if draft_df is None:
+                    draft_df = self.draft_parser.parse_draft_info(draft_soup, info_dict)
+                else:
+                    draft_df = draft_df.append(self.draft_parser.parse_draft_info(draft_soup, info_dict))
+
+            dm.save_to_parquet(self.league_id, draft_df, DATACONTRACT.DRAFTFILENAME, False)
+            print('Loaded Draft Info from WEB')
+        else:
+            print('Loaded Draft Info from PARQUET file')
+        return draft_df
 
     def load_matchup_info(self) -> pd.DataFrame:
         matchup_df = dm.load_from_parquet(self.league_id, DATACONTRACT.MATCHUPFILENAME)
@@ -171,6 +199,19 @@ class League:
             self.player_info = df
         else:
             self.player_info = self.player_info.append(df)
+
+    def calculate_rank(self):
+        loaded_weeks = self.score_info['Week'].max()
+        self.gen_ranking_df()
+        for week in loaded_weeks:
+            for index, fantasy_player in self.league_info.iterrows():
+                #TODO
+                pass
+
+    def gen_ranking_df(self):
+        # RANKINGTRACKERCOLS = [UNIQUE_ID, LEAGUE_ID, TEAM_ID, TEAM_NAME, WEEK, RESULT, TOTALWINS, TEAMRANKING]
+        self.rank_info = pd.DataFrame(columns=DATACONTRACT.RANKINGTRACKERCOLS)
+
 
     def export_league_data_to_csv(self):
         leaguefilename = str(self.league_id) + 'LeagueData'

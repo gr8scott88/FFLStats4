@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+from loguru import logger
 
 
 class YahooWebHelper:
@@ -22,24 +23,31 @@ class YahooWebHelper:
         html_league_and_team = self.build_url(league_id, team_id)
         return html_league_and_team + r'/team?&week=' + str(week)
 
+    def build_draft_url(self, league_id, team_id):
+        return self.build_url(league_id, team_id, 'draft')
+
     def build_matchup_url_by_week(self, league_id, team_id, week):
-        # https: // football.fantasysports.yahoo.com / f1 / 609682 / matchup?week=1&mid1=1
         html_league_and_team = self.build_url(league_id, team_id)
         return html_league_and_team + r'/matchup?&week=' + str(week) + '&mid1=1'
 
     def get_league_soup(self, league_id):
         url = self.build_url_for_league(league_id)
-        print(url)
+        logger.debug(url)
         return self.get_soup(url)
 
     def get_team_soup_by_week(self, league_id, team_id, week):
         url = self.build_team_url_by_week(league_id, team_id, week)
-        print(url)
+        logger.debug(url)
         return self.get_soup(url)
 
     def get_matchup_soup_by_week(self, league_id, team_id, week):
         url = self.build_matchup_url_by_week(league_id, team_id, week)
-        print(url)
+        logger.debug(url)
+        return self.get_soup(url)
+
+    def get_draft_soup(self, league_id, team_id):
+        url = self.build_draft_url(league_id, team_id)
+        logger.debug(url)
         return self.get_soup(url)
 
     @staticmethod

@@ -1,4 +1,5 @@
 from models import League
+from models import DATACONTRACT
 from utility.YahooWebHelper import YahooWebHelper
 from web_parsing.MatchPageParser import MatchParser
 from web_parsing.TeamPageParser import TeamParser
@@ -19,6 +20,31 @@ AFC = League.League(AFC_id, 'AFC')
 NFC = League.League(NFC_id, 'NFC')
 AFC_vis = LeagueVisualizer(AFC)
 NFC_vis = LeagueVisualizer(NFC)
+
+AFC.player_info.join(AFC.draft_info, on=DATACONTRACT.PLAYERNAME)
+
+# df["y"] = pd.to_numeric(df["y"])
+AFC.draft_info[DATACONTRACT.DRAFTORDER] = pd.to_numeric(AFC.draft_info[DATACONTRACT.DRAFTORDER])
+
+data = AFC.player_info.merge(AFC.draft_info[[DATACONTRACT.DRAFTORDER, DATACONTRACT.PLAYERNAME]], on=DATACONTRACT.PLAYERNAME)
+
+# df[(df.A == 1) & (df.D == 6)]
+order = 1
+order_filter = f'{DATACONTRACT.DRAFTORDER}<={order}'
+filtered = data.query(order_filter)
+# grouped = df.groupby('A')
+# >>> grouped.filter(lambda x: x['B'].mean() > 3.)
+draft_scores = filtered.groupby(DATACONTRACT.UNIQUE_ID)[DATACONTRACT.REAL_SCORE].sum()
+draft_scores = draft_scores.to_frame().reset_index()
+# AFC.league_info[DATACONTRACT.PLAYERNAME]
+cleaned = draft_scores.merge(AFC.league_info[[DATACONTRACT.UNIQUE_ID, DATACONTRACT.TEAM_NAME]], on=DATACONTRACT.UNIQUE_ID)
+cleaned = cleaned.set_index(DATACONTRACT.TEAM_NAME)
+# cleaned = draft_scores.join(AFC.league_info[[DATACONTRACT.UNIQUE_ID, DATACONTRACT.PLAYERNAME]], on=DATACONTRACT.UNIQUE_ID)
+plot = cleaned.plot.pie(y=DATACONTRACT.REAL_SCORE, figsize=(5, 5))
+
+
+
+
 
 AFC.load_all_player_data_through_week(load_thru_week)
 NFC.load_all_player_data_through_week(load_thru_week)
