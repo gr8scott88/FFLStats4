@@ -32,6 +32,10 @@ class League:
         self.player_info = self.load_player_info()
         # self.rank_info = self.calculate_rank()
 
+    def update(self, current_week):
+        self.load_all_player_data_through_week(current_week)
+        self.load_team_scores_through_week(current_week)
+
     def reload_player_info(self):
         self.player_info = self.load_player_info()
 
