@@ -31,7 +31,7 @@ NFC.update(current_week)
 # plot_player_breakdown_for_all_teams(AFC)
 # plot_player_breakdown_for_season(AFC)
 
-plot_draft_value_by_team(AFC, 5, 12)
-plot_draft_value_by_team(NFC, 5, 12)
+plot_draft_value_by_team(AFC, 5, 12, save=True)
+plot_draft_value_by_team(NFC, 5, 12, save=True)
 
 

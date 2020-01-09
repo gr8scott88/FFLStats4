@@ -6,6 +6,8 @@ import time
 import os
 from matplotlib.cm import get_cmap
 from models import DATACONTRACT
+import numpy as np
+
 
 color_wheel = "Accent"
 cmap = get_cmap(color_wheel)
@@ -143,6 +145,7 @@ def plot_player_breakdown_for_season(league: League, save=False):
         plt.show()
 
 
+
 def plot_draft_value_by_team(league: League, max_draft, thru_week: int, save=False):
     # f, ax = plt.subplots(figsize=(20, 10))
     league.draft_info[DATACONTRACT.DRAFTORDER] = pd.to_numeric(league.draft_info[DATACONTRACT.DRAFTORDER])
@@ -159,11 +162,10 @@ def plot_draft_value_by_team(league: League, max_draft, thru_week: int, save=Fal
     cleaned = draft_scores.merge(league.league_info[[DATACONTRACT.UNIQUE_ID, DATACONTRACT.TEAM_NAME]],
                                  on=DATACONTRACT.UNIQUE_ID)
     cleaned = cleaned.set_index(DATACONTRACT.TEAM_NAME)
-    plot = cleaned.plot.pie(y=DATACONTRACT.REAL_SCORE, figsize=(15, 10), legend='', autopct='%1.1f%%')
+    # plot = cleaned.plot.pie(y=DATACONTRACT.REAL_SCORE, figsize=(15, 10), legend='', autopct='%1.1f%%')
+    plot = cleaned.plot.pie(y=DATACONTRACT.REAL_SCORE, figsize=(15, 10), legend='',
+                            autopct=lambda val: np.round(val / 100. * cleaned[DATACONTRACT.REAL_SCORE].sum(), 0))
     plot_title = f'Cumulative Score from Top {max_draft} Drafted Players for {league.name} Through Week {thru_week}'
-    # plt.legend(loc='center left', bbox_to_anchor=(1.2, 0.5))
-    # f.subplots_adjust(right=1.0)
-    # f.subplots_adjust(bottom=0.3)
     plt.title(plot_title)
     plt.ylabel('')
     if save:
@@ -175,7 +177,7 @@ def plot_draft_value_by_team(league: League, max_draft, thru_week: int, save=Fal
 
 def save_plot(league: League, name):
     name = name.replace('.', '')
-    dir_path = os.path.join('plots', league.name)
+    dir_path = os.path.join('export', 'plots', league.name)
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
     fpath = os.path.join('export', 'plots', league.name, name)
