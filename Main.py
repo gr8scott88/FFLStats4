@@ -35,3 +35,13 @@ plot_draft_value_by_team(AFC, 5, 12, save=True)
 plot_draft_value_by_team(NFC, 5, 12, save=True)
 
 
+
+AFC.score_info['League'] = 'AFC'
+NFC.score_info['League'] = 'NFC'
+Total_DF = AFC.score_info.append(NFC.score_info)
+Total_DF.sort_values(by=['Week'])
+g = Total_DF.groupby(['League', 'Week'])['RealScore'].sum().unstack('League')
+
+for group in g:
+    print(group.sum())
+g.plot()
