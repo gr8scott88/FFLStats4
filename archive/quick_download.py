@@ -1,5 +1,4 @@
-from data_downloading import ResultsDownloader as rd
-
+from archive.data_downloading import ResultsDownloader as rd
 
 results = rd.ResultsDownloader(609682, 10)
 # results.download_team(1, 1)

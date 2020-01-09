@@ -2,7 +2,7 @@ import requests
 import os
 
 
-file_root = r'C:\Users\Scott\PycharmProjects\FFLStats4'
+file_root = r'/'
 
 
 class ResultsDownloader:

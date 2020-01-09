@@ -1,6 +1,7 @@
 import os
 import pandas as pd
-import GLOBALS
+from archive import GLOBALS
+
 
 def save_df_to_file(directory, name, df: pd.DataFrame, overwrite=True):
     if not does_directory_exist(directory):

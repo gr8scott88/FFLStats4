@@ -38,11 +38,13 @@ class LeagueManager:
 
     def load_team_ids(self, path):
         with open(path) as configfile:
+            pass
 
 
     def parse_all_data(self):
         current_week = self.date_manager.get_current_week()
         for week in range(current_week):
+            pass
 
     def parse_league_by_week(self, week):
         pass

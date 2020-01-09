@@ -9,3 +9,5 @@ class DataAnalyser:
         self.player_info = league.player_info
 
     def cum_score_top_x_draft_pics(self, x):
+        pass
+

@@ -1,6 +1,6 @@
 import os
 
-filepath_root = r'C:\Users\Scott\PycharmProjects\FFLStats4\data_archive'
+filepath_root = r'/data_archive'
 url_root = r'https://football.fantasysports.yahoo.com/f1/'
 
 

@@ -144,7 +144,7 @@ class LeagueVisualizer:
         dir_path = os.path.join('plots', self.league.name)
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
-        fpath = os.path.join('plots', self.league.name, name)
+        fpath = os.path.join('export', 'plots', self.league.name, name)
         plt.savefig(fpath)
         plt.close()
 

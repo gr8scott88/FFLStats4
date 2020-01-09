@@ -147,6 +147,6 @@ def save_plot(league: League, name):
     dir_path = os.path.join('plots', league.name)
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
-    fpath = os.path.join('plots', league.name, name)
+    fpath = os.path.join('export', 'plots', league.name, name)
     plt.savefig(fpath)
     plt.close()

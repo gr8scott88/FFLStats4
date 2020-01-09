@@ -1,14 +1,13 @@
 import pandas as pd
-from models import Team, DATACONTRACT
+from models import DATACONTRACT
 from web_parsing.LeaguePageParser import LeaguePageParser
 from web_parsing.MatchPageParser import MatchParser
 from web_parsing.TeamPageParser import TeamParser
 from web_parsing.PlayerParser import PlayerParser
 from web_parsing.DraftParser import DraftParser
-import data_storage.LocalDataManager as dm
+import data_handlers.LocalDataManager as dm
 from data_handlers.PandasHandler import PandasDataHandler
 from utility.YahooWebHelper import YahooWebHelper
-from loguru import logger
 
 total_weeks = 16
 current_week = 7

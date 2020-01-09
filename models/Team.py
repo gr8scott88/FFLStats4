@@ -1,10 +1,9 @@
 from bs4 import BeautifulSoup
 from web_parsing import TeamPageParser
-import GLOBALS
 from utility import FileManager, WebHelper
 import os
 from models import Player, Webpage
-import Helper
+from archive import Helper, GLOBALS
 
 
 class Team:
