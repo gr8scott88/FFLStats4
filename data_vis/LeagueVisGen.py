@@ -5,6 +5,7 @@ import seaborn as sns
 import time
 import os
 from matplotlib.cm import get_cmap
+from models import DATACONTRACT
 
 color_wheel = "Accent"
 cmap = get_cmap(color_wheel)
@@ -135,6 +136,36 @@ def plot_player_breakdown_for_season(league: League, save=False):
     f.subplots_adjust(right=0.8)
     f.subplots_adjust(bottom=0.3)
     plt.xticks(rotation=30, ha='right')
+    if save:
+        plt.show()
+        save_plot(league, plot_title)
+    else:
+        plt.show()
+
+
+def plot_draft_value_by_team(league: League, max_draft, thru_week: int, save=False):
+    # f, ax = plt.subplots(figsize=(20, 10))
+    league.draft_info[DATACONTRACT.DRAFTORDER] = pd.to_numeric(league.draft_info[DATACONTRACT.DRAFTORDER])
+    # league.player_info.join(league.draft_info, on=DATACONTRACT.PLAYERNAME)
+    data = league.player_info.merge(league.draft_info[[DATACONTRACT.DRAFTORDER, DATACONTRACT.PLAYERNAME]],
+                                    on=DATACONTRACT.PLAYERNAME)
+
+    order_filter = f'{DATACONTRACT.DRAFTORDER}<={max_draft}'
+    week_filter = f'{DATACONTRACT.WEEK}<={thru_week}'
+    filtered = data.query(order_filter)
+    filtered = filtered.query(week_filter)
+    draft_scores = filtered.groupby(DATACONTRACT.UNIQUE_ID)[DATACONTRACT.REAL_SCORE].sum()
+    draft_scores = draft_scores.to_frame().reset_index()
+    cleaned = draft_scores.merge(league.league_info[[DATACONTRACT.UNIQUE_ID, DATACONTRACT.TEAM_NAME]],
+                                 on=DATACONTRACT.UNIQUE_ID)
+    cleaned = cleaned.set_index(DATACONTRACT.TEAM_NAME)
+    plot = cleaned.plot.pie(y=DATACONTRACT.REAL_SCORE, figsize=(15, 10), legend='', autopct='%1.1f%%')
+    plot_title = f'Cumulative Score from Top {max_draft} Drafted Players for {league.name} Through Week {thru_week}'
+    # plt.legend(loc='center left', bbox_to_anchor=(1.2, 0.5))
+    # f.subplots_adjust(right=1.0)
+    # f.subplots_adjust(bottom=0.3)
+    plt.title(plot_title)
+    plt.ylabel('')
     if save:
         plt.show()
         save_plot(league, plot_title)

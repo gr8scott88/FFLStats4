@@ -15,8 +15,10 @@ td = datetime.today()
 elapsed = td - dt
 current_week = math.floor(elapsed.days/7)
 
+current_week = 16 if current_week > 16 else current_week  # cap at 16
+
 AFC_id = config['AFC']['id']
-NFC_id = config['AFC']['id']
+NFC_id = config['NFC']['id']
 
 AFC = League(AFC_id, 'AFC')
 NFC = League(NFC_id, 'NFC')
@@ -25,9 +27,11 @@ AFC.update(current_week)
 NFC.update(current_week)
 
 
-plot_cum_real_score_by_week(AFC)
-plot_player_breakdown_for_all_teams(AFC)
+# plot_cum_real_score_by_week(AFC)
+# plot_player_breakdown_for_all_teams(AFC)
+# plot_player_breakdown_for_season(AFC)
 
-
+plot_draft_value_by_team(AFC, 5, 12)
+plot_draft_value_by_team(NFC, 5, 12)
 
 
