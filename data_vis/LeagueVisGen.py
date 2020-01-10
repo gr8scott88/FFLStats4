@@ -7,11 +7,13 @@ import os
 from matplotlib.cm import get_cmap
 from models import DATACONTRACT
 import numpy as np
+from loguru import logger
 
 
 color_wheel = "Accent"
 cmap = get_cmap(color_wheel)
 colors = cmap.colors
+sns.set_context('talk')
 
 
 def plot_real_score_by_week(league: League, save=False):
@@ -145,7 +147,6 @@ def plot_player_breakdown_for_season(league: League, save=False):
         plt.show()
 
 
-
 def plot_draft_value_by_team(league: League, max_draft, thru_week: int, save=False):
     # f, ax = plt.subplots(figsize=(20, 10))
     league.draft_info[DATACONTRACT.DRAFTORDER] = pd.to_numeric(league.draft_info[DATACONTRACT.DRAFTORDER])
@@ -175,11 +176,62 @@ def plot_draft_value_by_team(league: League, max_draft, thru_week: int, save=Fal
         plt.show()
 
 
+def plot_cum_injury_score_by_team(league: League, save=False):
+    # I dont think I have player status... so can't really get "out"
+    pass
+
+def plot_cum_real_score_by_league_through_week(leagues: pd.DataFrame, week, save=False):
+    leagues.sort_values(by=['Week'])
+    grouped = leagues.groupby(DATACONTRACT.LEAGUE_NAME)
+    fig, ax = plt.subplots(figsize=(15, 7))
+    ax.set_prop_cycle(color=colors)
+    for name, group in grouped:
+        group['CumScore'] = group[DATACONTRACT.REAL_SCORE].cumsum()
+        group.plot(x='Week', y='CumScore', ax=ax, label=name)
+    plot_title = f'Cumulative Total Score by Week Between Leagues'
+    plt.title(plot_title)
+    plt.xlabel('Week')
+    plt.ylabel('Cumulative Score')
+    plt.legend(loc='upper left')
+
+    if save:
+        manual_save("comparison", plot_title)
+    else:
+        plt.show()
+
+
+def plot_real_score_by_league_through_week(leagues: pd.DataFrame, week, save=False):
+    fig, ax = plt.subplots(figsize=(15, 7))
+    ax.set_prop_cycle(color=colors)
+    g = leagues.groupby([DATACONTRACT.LEAGUE_NAME, DATACONTRACT.WEEK])[DATACONTRACT.REAL_SCORE].sum().unstack(DATACONTRACT.LEAGUE_NAME)
+    g.plot(ax=ax)
+    plot_title = f'Total Score by Week Between Leagues'
+    plt.title(plot_title)
+    plt.xlabel('Week')
+    plt.ylabel('Cumulative Score')
+    plt.legend(loc='upper left')
+    if save:
+        manual_save('comparison', plot_title)
+    else:
+        plt.show()
+
+
+def manual_save(folder, filename):
+    dir_path = os.path.join('export', 'plots', folder)
+    if not os.path.exists(dir_path):
+        os.mkdir(dir_path)
+    fpath = os.path.join('export', 'plots', folder, filename)
+    logger.debug(f'Saving plot to {fpath}')
+    plt.savefig(fpath)
+    plt.close()
+
+
 def save_plot(league: League, name):
     name = name.replace('.', '')
     dir_path = os.path.join('export', 'plots', league.name)
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
     fpath = os.path.join('export', 'plots', league.name, name)
+    logger.debug(f'Saving plot to {fpath}')
     plt.savefig(fpath)
     plt.close()
